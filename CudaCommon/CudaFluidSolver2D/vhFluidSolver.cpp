@@ -133,10 +133,10 @@ void VHFluidSolver::initFluidSolver(int x, int y){
 
 void VHFluidSolver::clearFluid(){
 
-	if (res.x != -1) {
+	if (res.x != -1) {	
 
 		delete host_dens;
-
+		
 		cu::cudaFree(dev_noise);
 		cu::cudaFreeArray(noiseArray);
 
@@ -159,7 +159,7 @@ void VHFluidSolver::clearFluid(){
 		cu::cudaFreeArray(obstArray);
 
 		free_d_permCu();
-
+		
 
 		/*if (colOutput==1)
 			cu::cudaFree(output_display);*/
@@ -197,8 +197,8 @@ void VHFluidSolver::solveFluid(){
 
 			addCollider2DCu(dev_obstacles, radius, position, res, vel);
 		}
-
-
+	
+		
 		cu::cudaMemcpyToArray( velArray, 0, 0, dev_vel, res.x*res.y*sizeof(cu::float2), cu::cudaMemcpyDeviceToDevice);
 		cu::cudaMemcpyToArray( obstArray, 0, 0, dev_obstacles, res.x*res.y*sizeof(cu::float4), cu::cudaMemcpyDeviceToDevice);
 		advectVel2DCu(dev_vel,timestep,velDamp,invGridSize,res);
@@ -207,7 +207,7 @@ void VHFluidSolver::solveFluid(){
 		cu::cudaMemcpyToArray(velArray, 0, 0, dev_vel, res.x*res.y*sizeof(cu::float2), cu::cudaMemcpyDeviceToDevice);
 		cu::cudaMemcpyToArray(densArray, 0, 0, dev_dens, res.x*res.y*sizeof(float), cu::cudaMemcpyDeviceToDevice);
 		advectDens2DCu(dev_dens,timestep,densDis,invGridSize,res);
-
+		
 		for (int j=0; j<nEmit; j++) {
 			position = cu::make_float2(res.x*0.5+res.x/fluidSize.x*emitters[j].posX,
 								res.y*0.5+res.y/fluidSize.y*emitters[j].posY);
@@ -249,12 +249,12 @@ void VHFluidSolver::solveFluid(){
 		cu::cudaMemcpyToArray(velArray, 0, 0, dev_vel, res.x*res.y*sizeof(cu::float2), cu::cudaMemcpyDeviceToDevice);
 		cu::cudaMemcpyToArray(pressureArray, 0, 0, dev_pressure, res.x*res.y*sizeof(float), cu::cudaMemcpyDeviceToDevice);
 		projection2DCu(dev_vel,res,invCellSize);
-
+		
 
 	}
 
 	f++;
-
+	
 	unbind2DTexturesCu();
 
 }
@@ -295,7 +295,7 @@ void VHFluidSolver::initPixelBuffer(){
 	glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
 
 	// register this buffer object with CUDA
-	cu::cutilSafeCall(cu::cudaGraphicsGLRegisterBuffer(&cuda_pbo_resource, pbo, cu::cudaGraphicsMapFlagsWriteDiscard));
+	cu::cutilSafeCall(cu::cudaGraphicsGLRegisterBuffer(&cuda_pbo_resource, pbo, cu::cudaGraphicsMapFlagsWriteDiscard));	
 
 	// create texture for display
 	glGenTextures(1, &gl_Tex);
@@ -304,7 +304,7 @@ void VHFluidSolver::initPixelBuffer(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, displayX, displayY, 0, GL_RGBA, GL_FLOAT,  NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
-
+	
 
 	unlockOpenGLContext();
 
@@ -324,10 +324,10 @@ void VHFluidSolver::drawFluid(float fluidRotX, float fluidRotY, float fluidRotZ,
 			displayY = newResY;
 			initPixelBuffer();
 		}
-
+					
 		cu::cutilSafeCall(cu::cudaGraphicsMapResources(1, &cuda_pbo_resource, 0));
 		cu::float4 *d_output;
-		size_t num_bytes;
+		size_t num_bytes; 
 		cu::cutilSafeCall(cu::cudaGraphicsResourceGetMappedPointer((void **)&d_output, &num_bytes,  cuda_pbo_resource));
 		cu::cudaMemset(d_output, 0, displayX*displayY*sizeof(cu::float4));
 

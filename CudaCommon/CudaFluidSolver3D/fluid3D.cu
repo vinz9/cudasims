@@ -73,8 +73,18 @@ float4 mul(const float3x4 &M, const float4 &v)
     return r;
 }
 
-__global__ void addFluidForceKernel(float3* vel, float3* pos, cudaExtent gres, float3 invSize, float strength,
-									float dt, int nParts)
+__device__ void addFluidForceDevice(float3* vel, float3* pos, cudaExtent gres, float3 invSize, float strength, float dt){
+
+		float4 sample = tex3D(texVel, (pos->x*invSize.x+0.5f) * (gres.width)+0.5,
+										(pos->y*invSize.y+0.5f) * (gres.height)+0.5,
+										(pos->z*invSize.z+0.5f) * (gres.depth)+0.5);
+		*vel = *vel + strength * make_float3(sample.x,sample.y,sample.z);
+
+
+}
+
+__global__ void addFluidForceLeadsKernel(float3* vel, float3* pos, cudaExtent gres, float3 invSize, float strength,
+									float dt, int nParts, int trailLength)
 {
     unsigned int x = blockIdx.x*blockDim.x + threadIdx.x;
 
@@ -82,10 +92,27 @@ __global__ void addFluidForceKernel(float3* vel, float3* pos, cudaExtent gres, f
 
 	if (n<nParts) {
 
-		float4 sample = tex3D(texVel, (pos[n].x*invSize.x+0.5f) * (gres.width)+0.5,
-										(pos[n].y*invSize.y+0.5f) * (gres.height)+0.5,
-										(pos[n].z*invSize.z+0.5f) * (gres.depth)+0.5);
-		vel[n] = vel[n] + strength * make_float3(sample.x,sample.y,sample.z);
+		if(trailLength > 0) {
+			n = n*trailLength;
+		}
+
+		addFluidForceDevice(&vel[n], &pos[n], gres, invSize, strength, dt);
+
+	}
+}
+
+__global__ void addFluidForceTrailsKernel(float3* vel, float3* pos, cudaExtent gres, float3 invSize, float strength,
+									float dt, int nParts, int trailLength)
+{
+    unsigned int x = blockIdx.x*blockDim.x + threadIdx.x;
+
+	int n = x;
+
+	if (n<nParts) {
+
+		if (n%trailLength != 0) {
+			addFluidForceDevice(&vel[n], &pos[n], gres, invSize, strength, dt);
+		}
 
 	}
 }
@@ -1309,16 +1336,25 @@ extern "C" void renderFluidSliceCu(float4* d_output, cudaExtent res, float slice
 }
 
 extern "C" void addFluidForceKernelCu(float3* vel, float3* pos, cudaExtent gres, float3 invSize, float strength,
-									  float dt, int nParts){
+									  float dt, int nLeadParts, int trailLength, int leads){
 
 
-	int nthreads = min(256, nParts);
 
-	int nBlocks = nParts/nthreads + (!(nParts%nthreads)?0:1);
+	if (leads){
 
-    dim3 blocks(nBlocks, 1,1);
-    dim3 threads(nthreads, 1, 1);
+		int nthreads = min(256, nLeadParts);
+		int nBlocks = nLeadParts/nthreads + (!(nLeadParts%nthreads)?0:1);
+		dim3 blocks(nBlocks, 1,1); dim3 threads(nthreads, 1, 1);
 
-	addFluidForceKernel<<<blocks,threads>>>(vel, pos, gres, invSize, strength, dt, nParts);
+		addFluidForceLeadsKernel<<<blocks,threads>>>(vel, pos, gres, invSize, strength, dt, nLeadParts, trailLength);
+	} else {
+
+		int nParts = nLeadParts * trailLength;
+		int nthreads = min(256, nParts);
+		int nBlocks = nParts/nthreads + (!(nParts%nthreads)?0:1);
+		dim3 blocks(nBlocks, 1,1); dim3 threads(nthreads, 1, 1);
+
+		addFluidForceTrailsKernel<<<blocks,threads>>>(vel, pos, gres, invSize, strength, dt, nParts, trailLength);
+	}
 
 }

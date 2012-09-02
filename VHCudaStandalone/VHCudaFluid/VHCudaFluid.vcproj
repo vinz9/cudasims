@@ -132,7 +132,7 @@
 				AdditionalIncludeDirectories="$(CUDA_INC_PATH);$(NVSDKCOMPUTE_ROOT)/C/common/inc"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>

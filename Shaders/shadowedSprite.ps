@@ -1,0 +1,16 @@
+uniform sampler2D shadowTex;
+uniform sampler2D sDiffuseMap;
+   
+
+void main(void) {
+
+	vec4 eyeSpacePos = gl_TexCoord[1]; 
+	vec4 shadowPos = gl_TextureMatrix[0] * eyeSpacePos;
+    vec3 shadow = vec3(1.0) - texture2DProj(shadowTex, shadowPos.xyw).xyz;
+    
+    vec4 tex = texture2D(sDiffuseMap, gl_TexCoord[0].st);
+	float alpha = gl_Color.w * tex.w;
+
+    gl_FragColor = vec4(gl_Color.xyz * tex.xyz * shadow * alpha, alpha); 
+
+}

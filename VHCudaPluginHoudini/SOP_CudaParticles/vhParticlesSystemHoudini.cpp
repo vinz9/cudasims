@@ -2,6 +2,8 @@
 
 void VHParticlesSystemHoudini::lockOpenGLContext(){
 
+	//warning not called during VHParticlesSystem constructor
+
 	RE_Render* myRender = RE_Render::getRenderContext(2);
 	myRender->lockContextForRender();
 

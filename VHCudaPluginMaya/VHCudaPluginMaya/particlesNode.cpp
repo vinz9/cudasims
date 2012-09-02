@@ -84,7 +84,7 @@ void particlesNode::draw( M3dView & view, const MDagPath & path,
 				opaScalePlug.getValue(particlesSystem->opacity);
 
 				MPlug pointSizePlug( thisNode, aPointSize );
-				pointSizePlug.getValue(particlesSystem->pointSize);
+				pointSizePlug.getValue(particlesSystem->pRend->pointSize);
 
 				MPlug startColorRPlug( thisNode, aStartColorR );
 				float startColR;
@@ -385,7 +385,7 @@ MStatus particlesNode::compute (const MPlug& plug, MDataBlock& data) {
 
 				int maxParts = maxPartsHandle.asInt();
 				if (particlesSystem->nParts!=maxParts)
-					particlesSystem->changeMaxParts(maxParts);
+					particlesSystem->changeMaxParts(maxParts,1);
 
 		} else {
 
@@ -399,11 +399,13 @@ MStatus particlesNode::compute (const MPlug& plug, MDataBlock& data) {
 
 			MDataHandle velDampHandle = data.inputValue (aVelDamp, &returnStatus);
 			CHECK_MSTATUS( returnStatus );
-			particlesSystem->velDamp = velDampHandle.asFloat();
+			//particlesSystem->velDamp = velDampHandle.asFloat();
+			((DampingForce*)(particlesSystem->leadsForces[0]))->strength = velDampHandle.asFloat();
 
 			MDataHandle gravityStrengthHandle = data.inputValue (aGravityStrength, &returnStatus);
 			CHECK_MSTATUS( returnStatus );
-			particlesSystem->gravityStrength = gravityStrengthHandle.asFloat();
+			//particlesSystem->gravityStrength = gravityStrengthHandle.asFloat();
+			((GravityForce*)(particlesSystem->leadsForces[1]))->strength = gravityStrengthHandle.asFloat();
 
 			MDataHandle gravityXHandle = data.inputValue (aGravityX, &returnStatus);
 			CHECK_MSTATUS( returnStatus );
@@ -417,16 +419,19 @@ MStatus particlesNode::compute (const MPlug& plug, MDataBlock& data) {
 			CHECK_MSTATUS( returnStatus );
 			float gravityZ = gravityZHandle.asFloat();
 
-			particlesSystem->gravityDir = cu::make_float3(gravityX,gravityY,gravityZ);
+			//particlesSystem->gravityDir = cu::make_float3(gravityX,gravityY,gravityZ);
+			((GravityForce*)(particlesSystem->leadsForces[1]))->gravityDir = cu::make_float3(gravityX,gravityY,gravityZ);
 
 			MDataHandle fluidStrengthHandle = data.inputValue (aFluidStrength, &returnStatus);
 			CHECK_MSTATUS( returnStatus );
-			particlesSystem->fluidStrength = fluidStrengthHandle.asFloat();
+			//particlesSystem->fluidStrength = fluidStrengthHandle.asFloat();
+			((FluidForce*)(particlesSystem->leadsForces[3]))->strength = fluidStrengthHandle.asFloat();
 
 
 			MDataHandle noiseAmpHandle = data.inputValue (aNoiseAmp, &returnStatus);
 			CHECK_MSTATUS( returnStatus );
-			particlesSystem->noiseAmp =  cu::make_float3(noiseAmpHandle.asFloat(),noiseAmpHandle.asFloat(),noiseAmpHandle.asFloat());
+			//particlesSystem->noiseAmp =  cu::make_float3(noiseAmpHandle.asFloat(),noiseAmpHandle.asFloat(),noiseAmpHandle.asFloat());
+			((TurbulenceForce*)(particlesSystem->leadsForces[2]))->noiseAmp = cu::make_float3(noiseAmpHandle.asFloat(),noiseAmpHandle.asFloat(),noiseAmpHandle.asFloat());
 
 
 			MDataHandle noiseOffsetXHandle = data.inputValue (aNoiseOffsetX, &returnStatus);
@@ -441,19 +446,23 @@ MStatus particlesNode::compute (const MPlug& plug, MDataBlock& data) {
 			CHECK_MSTATUS( returnStatus );
 			float noiseOffsetZ = noiseOffsetZHandle.asFloat();
 
-			particlesSystem->noiseOffset = cu::make_float3(noiseOffsetX,noiseOffsetY,noiseOffsetZ);
+			//particlesSystem->noiseOffset = cu::make_float3(noiseOffsetX,noiseOffsetY,noiseOffsetZ);
+			((TurbulenceForce*)(particlesSystem->leadsForces[2]))->noiseOffset =cu::make_float3(noiseOffsetX,noiseOffsetY,noiseOffsetZ);
 
 			MDataHandle noiseFreqHandle = data.inputValue (aNoiseFreq, &returnStatus);
 			CHECK_MSTATUS( returnStatus );
-			particlesSystem->noiseFreq = noiseFreqHandle.asFloat();
+			//particlesSystem->noiseFreq = noiseFreqHandle.asFloat();
+			((TurbulenceForce*)(particlesSystem->leadsForces[2]))->noiseFreq = noiseFreqHandle.asFloat();
 
 			MDataHandle noiseOctHandle = data.inputValue (aNoiseOct, &returnStatus);
 			CHECK_MSTATUS( returnStatus );
-			particlesSystem->noiseOct = noiseOctHandle.asInt();
+			//particlesSystem->noiseOct = noiseOctHandle.asInt();
+			((TurbulenceForce*)(particlesSystem->leadsForces[2]))->noiseOct = noiseOctHandle.asInt();
 
 			MDataHandle noiseLacunHandle = data.inputValue (aNoiseLacun, &returnStatus);
 			CHECK_MSTATUS( returnStatus );
-			particlesSystem->noiseLac = noiseLacunHandle.asFloat();
+			//particlesSystem->noiseLac = noiseLacunHandle.asFloat();
+			((TurbulenceForce*)(particlesSystem->leadsForces[2]))->noiseLac = noiseLacunHandle.asFloat();
 	
 			MFnTransform fnTransform;
 			MFnDagNode fnDag;
@@ -490,9 +499,11 @@ MStatus particlesNode::compute (const MPlug& plug, MDataBlock& data) {
 						MTransformationMatrix emitterMatrix = fnTransform.transformation();
 						MVector pos = MTransformationMatrix(emitterMatrix).getTranslation(MSpace::kWorld);
 
-						particlesSystem->emitters[k].posX = pos.x;
+						/*particlesSystem->emitters[k].posX = pos.x;
 						particlesSystem->emitters[k].posY = pos.y;
-						particlesSystem->emitters[k].posZ = pos.z;
+						particlesSystem->emitters[k].posZ = pos.z;*/
+
+						particlesSystem->emitters[k].pos = cu::make_float3(pos.x,pos.y,pos.z);
 
 						MPlug amountPlug = fnDag.findPlug("amount",false);
 						particlesSystem->emitters[k].amount = amountPlug.asDouble();
@@ -500,21 +511,26 @@ MStatus particlesNode::compute (const MPlug& plug, MDataBlock& data) {
 						MPlug radiusPlug = fnDag.findPlug("radius",false);
 						particlesSystem->emitters[k].radius = radiusPlug.asDouble();
 
-						particlesSystem->emitters[k].noiseVelAmpX = 0;
+						/*particlesSystem->emitters[k].noiseVelAmpX = 0;
 						particlesSystem->emitters[k].noiseVelAmpY = 0;
-						particlesSystem->emitters[k].noiseVelAmpZ = 0;
+						particlesSystem->emitters[k].noiseVelAmpZ = 0;*/
+
+						particlesSystem->emitters[k].noiseVelAmp = cu::make_float3(0,0,0);
 
 						particlesSystem->emitters[k].noiseVelFreq = 0;
 						particlesSystem->emitters[k].noiseVelLac = 0;
 						particlesSystem->emitters[k].noiseVelOct = 0;
-						particlesSystem->emitters[k].noiseVelOffsetX = 0;
+						/*particlesSystem->emitters[k].noiseVelOffsetX = 0;
 						particlesSystem->emitters[k].noiseVelOffsetY = 0;
-						particlesSystem->emitters[k].noiseVelOffsetZ = 0;
+						particlesSystem->emitters[k].noiseVelOffsetZ = 0;*/
+						particlesSystem->emitters[k].noiseVelOffset = cu::make_float3(0,0,0);
+
 						particlesSystem->emitters[k].radVelAmp = 0;
 
-						particlesSystem->emitters[k].velX = 0;
+						/*particlesSystem->emitters[k].velX = 0;
 						particlesSystem->emitters[k].velY = 0;
-						particlesSystem->emitters[k].velZ = 0;
+						particlesSystem->emitters[k].velZ = 0;*/
+						particlesSystem->emitters[k].vel = cu::make_float3(0,0,0);
 			
 						k++;
 					}
@@ -534,7 +550,8 @@ MStatus particlesNode::compute (const MPlug& plug, MDataBlock& data) {
 				int sId = solverIdPlug.asInt();
 
 				VHFluidSolver3D* curr3DSolver = VHFluidSolver3D::solverList[sId];
-				particlesSystem->fluidSolver = curr3DSolver;
+				//particlesSystem->fluidSolver = curr3DSolver;
+				((FluidForce*)(particlesSystem->leadsForces[3]))->fluidSolver = curr3DSolver;
 
 
 			}

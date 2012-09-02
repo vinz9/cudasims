@@ -14,6 +14,8 @@
 #include "../SOP_FluidSolver/SOP_FluidSolver3D.h"
 #include "../SOP_CudaParticles/SOP_CudaParticles.h"
 
+#include <RE/RE_OGLFramebuffer.h>
+
 
 GR_CudaHardware::GR_CudaHardware() {
 
@@ -104,12 +106,42 @@ void GR_CudaHardware::renderWire(GU_Detail *gdp, RE_Render &ren, const GR_Attrib
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glEnable( GL_BLEND );
-		glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+		/*int maxDrawBuffers;
+		glGetIntegerv ( GL_MAX_DRAW_BUFFERS_ARB, &maxDrawBuffers );
+
+		int db;
+		glGetIntegerv ( GL_DRAW_BUFFER, &db );
+
+		int dbb;
+		glGetIntegerv ( GL_DRAW_BUFFER0, &dbb );
+
+		int dba;
+		glGetIntegerv ( GL_AUX_BUFFERS, &dba );*/
+
+		//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 3);
+
+		//boolean IsFramebufferEXT(uint framebuffer);
+
+		glDisable(GL_BLEND);
 
 		currSystem->draw();
 
-		glDisable( GL_BLEND );
+		glEnable(GL_BLEND);
+
+		/*glColor3f(1.0, 0.0, 0.0);
+		glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(1,0,0);
+		glEnd();*/
+
+		/*GLfloat modelView[16];
+		glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
+
+		glColor3f(0.0, 0.0, 1.0);
+		glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(modelView[8],modelView[9],modelView[10]);
+		glEnd();*/
 
 		ren.toggleLighting(1);
 

@@ -1,0 +1,11 @@
+uniform vec4 uShadowColor;
+uniform sampler2D sDiffuseMap;
+void main()
+{
+   
+    vec4 tex = texture2D(sDiffuseMap, gl_TexCoord[0].st);
+    float alpha = uShadowColor.w * gl_Color.w * tex.w;
+
+    gl_FragColor =  vec4(uShadowColor.xyz * alpha, alpha);
+    
+}

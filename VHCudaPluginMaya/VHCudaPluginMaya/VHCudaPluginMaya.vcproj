@@ -22,7 +22,7 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug2011|Win32"
+			Name="Debug2012|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
@@ -92,7 +92,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug2011|x64"
+			Name="Debug2012|x64"
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Gm /EHsc /ZI /I &quot;.&quot; /D &quot;WIN32&quot; /D &quot;_DEBUG&quot; /RTC1 /c"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CUDA_INC_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya 2011 Subscription Advantage Pack\include&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/inc&quot;"
+				AdditionalIncludeDirectories="&quot;$(CUDA_INC_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya2012\include&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/inc&quot;"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,_AFXDLL,_MBCS,NT_PLUGIN,REQUIRE_IOSTREAM,__LITTLE_ENDIAN__"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -145,167 +145,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin"
-				AdditionalDependencies="cudart.lib glu32.lib glew64.lib cutil64D.lib Foundation.lib OpenMaya.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaUI.lib opengl32.lib"
-				OutputFile="C:\Users\vinz\Documents\maya\plug-ins\VHFluidCuda11DebX64.mll"
-				AdditionalLibraryDirectories="&quot;$(CUDA_LIB_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya 2011 Subscription Advantage Pack\lib&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
+				AdditionalDependencies="cudpp64.lib glut64.lib cudart.lib glu32.lib glew64.lib cutil64D.lib Foundation.lib OpenMaya.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaUI.lib opengl32.lib"
+				OutputFile="C:\Users\vinz\Documents\maya\plug-ins\VHFluidCuda12DebX64.mll"
+				AdditionalLibraryDirectories="&quot;$(CUDA_LIB_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya2012\lib&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
 				GenerateDebugInformation="false"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release2011|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="2"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="Cudart Build Rule"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				GenerateDebugInformation="true"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release2011|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="2"
-			CharacterSet="2"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="Cudart Build Rule"
-				Include="$(NVSDKCOMPUTE_ROOT)/C/common/inc"
-				TargetMachinePlatform="1"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(CUDA_INC_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya 2011 Subscription Advantage Pack\include&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/inc&quot;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_AFXDLL,_MBCS,NT_PLUGIN,REQUIRE_IOSTREAM,__LITTLE_ENDIAN__"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions="/subsystem:windows /dll /incremental:yes /export:initializePlugin /export:uninitializePlugin"
-				AdditionalDependencies="cudart.lib glu32.lib glew64.lib cutil64.lib Foundation.lib OpenMaya.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaUI.lib opengl32.lib"
-				OutputFile="C:\Users\vinz\Documents\maya\plug-ins\VHFluidCuda11X64.mll"
-				AdditionalLibraryDirectories="&quot;$(CUDA_LIB_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya 2011 Subscription Advantage Pack\lib&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
-				GenerateDebugInformation="true"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -438,83 +283,6 @@
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(CUDA_INC_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya2012\include&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/inc&quot;"
 				PreprocessorDefinitions="WIN32,_WINDOWS,_AFXDLL,_MBCS,NT_PLUGIN,REQUIRE_IOSTREAM,__LITTLE_ENDIAN__"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions="/subsystem:windows /dll /incremental:yes /export:initializePlugin /export:uninitializePlugin"
-				AdditionalDependencies="cudart.lib glu32.lib glew64.lib cutil64.lib Foundation.lib OpenMaya.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaUI.lib opengl32.lib"
-				OutputFile="C:\Users\vinz\Documents\maya\plug-ins\VHFluidCuda12X64.mll"
-				AdditionalLibraryDirectories="&quot;$(CUDA_LIB_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya2012\lib&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
-				GenerateDebugInformation="true"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release2013|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="2"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="Cudart Build Rule"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -531,88 +299,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				GenerateDebugInformation="true"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release2013|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="2"
-			CharacterSet="2"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="Cudart Build Rule"
-				Include="$(NVSDKCOMPUTE_ROOT)/C/common/inc"
-				TargetMachinePlatform="1"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(CUDA_INC_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya2013\include&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/inc&quot;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_AFXDLL,_MBCS,NT_PLUGIN,REQUIRE_IOSTREAM,__LITTLE_ENDIAN__"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
 				AdditionalOptions="/subsystem:windows /dll /incremental:yes /export:initializePlugin /export:uninitializePlugin"
-				AdditionalDependencies="cudart.lib glu32.lib glew64.lib cutil64.lib Foundation.lib OpenMaya.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaUI.lib opengl32.lib"
-				OutputFile="C:\Users\vinz\Documents\maya\plug-ins\VHFluidCuda13X64.mll"
-				AdditionalLibraryDirectories="&quot;$(CUDA_LIB_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya2013\lib&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
+				AdditionalDependencies="cudpp64.lib glut64.lib cudart.lib glu32.lib glew64.lib cutil64.lib Foundation.lib OpenMaya.lib OpenMayaAnim.lib OpenMayaFX.lib OpenMayaUI.lib opengl32.lib"
+				OutputFile="C:\Users\vinz\Documents\maya\plug-ins\VHFluidCuda12X64.mll"
+				AdditionalLibraryDirectories="&quot;$(CUDA_LIB_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya2012\lib&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -667,7 +357,7 @@
 				RelativePath="..\..\CudaCommon\CudaFluidSolver2D\perlinKernel.cu"
 				>
 				<FileConfiguration
-					Name="Debug2011|Win32"
+					Name="Debug2012|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -675,15 +365,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug2011|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="Cudart Build Rule"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release2011|x64"
+					Name="Debug2012|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -692,14 +374,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release2012|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="Cudart Build Rule"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release2013|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -769,7 +443,7 @@
 				RelativePath="..\..\CudaCommon\CudaFluidSolver3D\perlinKernel3d.cu"
 				>
 				<FileConfiguration
-					Name="Debug2011|Win32"
+					Name="Debug2012|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -777,15 +451,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug2011|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="Cudart Build Rule"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release2011|x64"
+					Name="Debug2012|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -800,20 +466,12 @@
 						Name="Cudart Build Rule"
 					/>
 				</FileConfiguration>
-				<FileConfiguration
-					Name="Release2013|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="Cudart Build Rule"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\CudaCommon\CudaFluidSolver3D\vhFluidObjects3D.h"
 				>
 				<FileConfiguration
-					Name="Debug2011|x64"
+					Name="Debug2012|x64"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -836,15 +494,7 @@
 				RelativePath="..\..\CudaCommon\CudaParticlesSystem\perlinKernelParts.cu"
 				>
 				<FileConfiguration
-					Name="Debug2011|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="Cudart Build Rule"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release2011|x64"
+					Name="Debug2012|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -859,21 +509,25 @@
 						Name="Cudart Build Rule"
 					/>
 				</FileConfiguration>
-				<FileConfiguration
-					Name="Release2013|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="Cudart Build Rule"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\CudaCommon\CudaParticlesSystem\vhParticlesKernels.cu"
 				>
 			</File>
 			<File
-				RelativePath="..\..\CudaCommon\CudaParticlesSystem\vhParticlesObjects3D.h"
+				RelativePath="..\..\CudaCommon\CudaParticlesSystem\vhParticlesObjects.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\CudaCommon\CudaParticlesSystem\vhParticlesObjects.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\CudaCommon\CudaParticlesSystem\vhParticlesRender.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\CudaCommon\CudaParticlesSystem\vhParticlesRender.h"
 				>
 			</File>
 			<File
@@ -882,6 +536,58 @@
 			</File>
 			<File
 				RelativePath="..\..\CudaCommon\CudaParticlesSystem\vhParticlesSystem.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Utils"
+			>
+			<File
+				RelativePath="..\..\Utils\cudaVbo.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\cudaVbo.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\fbo.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\fbo.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\GLSLProgram.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\GLSLProgram.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\nv_dds.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\nv_dds.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\textfile.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\textfile.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\TextureManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Utils\TextureManager.h"
 				>
 			</File>
 		</Filter>

@@ -34,7 +34,7 @@ static void Key(unsigned char key, int x, int y) {
     switch (key) {
         case 27:
 
-            exit(0);
+            //exit(0);
 		 case 'r':
 			 fluidSolver->resetFluid();
 			 break;

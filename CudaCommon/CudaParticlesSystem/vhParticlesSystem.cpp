@@ -7,6 +7,9 @@
 
 #include <time.h>
 
+#include "../../Utils/GLSLProgram.h"
+#include "../../Utils/textfile.h"
+
 
 int VHParticlesSystem::numSystems = -1;
 VHParticlesSystem* VHParticlesSystem::systemsList[10];
@@ -30,46 +33,47 @@ VHParticlesSystem::VHParticlesSystem(){
 	nParts = -1;
 	dt = 1.0/30.0;
 
-	posVbo = 0;
-	colourVbo = 0;
-
-	fluidSolver = NULL;
-
 	emitters = new ParticlesEmitter[1];
 
 	nEmit = 1;
 	emitters[0].amount = 2000;
-	emitters[0].posX = 0;
-	emitters[0].posY = 0;
-	emitters[0].posZ = 0;
+	emitters[0].pos = cu::make_float3(0,0,0);
 	emitters[0].radVelAmp = 0.0;
 	emitters[0].radius = 0.5; // 0.5
 
-	emitters[0].velX = 0;
-	emitters[0].velY = 0;
-	emitters[0].velZ = 0;
+	emitters[0].vel = cu::make_float3(0,0,0);
 
-	emitters[0].noiseVelAmpX = 0;
-	emitters[0].noiseVelAmpY = 0;
-	emitters[0].noiseVelAmpZ = 0;
+	emitters[0].noiseVelAmp = cu::make_float3(0,0,0);
 
 	partsLife = 4.0;
-	partsLifeVar = 0.0;	//1
-	velDamp = 0.0;	//0.1
-	gravityStrength = 1.0;
-	gravityDir = cu::make_float3(0,-1.0,0);
-	fluidStrength = 0.0;
+	partsLifeVar = 0.0;
 
-	noiseAmp = cu::make_float3(0,0,0); //cu::make_float3(2,2,2);
-	noiseOffset = cu::make_float3(0,0,0);
-	noiseOct = 1;
-	noiseLac = 2;
-	noiseFreq = 1;
+	inheritVel = 0.0;
+	inheritAge = 0.0;
 
-	pointSize = 1.0;
+
+	leadsForces[0] = new DampingForce(this);
+	leadsForces[1] = new GravityForce(this);
+	leadsForces[2] = new TurbulenceForce(this);
+	leadsForces[3] = new FluidForce(this);
+
+	nLeadsForces = 4;
+
+	trailsForces[0] = new DampingForce(this);
+	trailsForces[1] = new GravityForce(this);
+	trailsForces[2] = new TurbulenceForce(this);
+	trailsForces[3] = new FluidForce(this);
+
+	nTrailsForces = 4;
+
+	preview = 0;
+
 	opacity = 0.05;
 	startColor = cu::make_float3(1,1,1);
 	endColor = cu::make_float3(1,1,1);
+
+	pRend = new VHParticlesRender(this);
+
 
 }
 
@@ -78,54 +82,25 @@ VHParticlesSystem::~VHParticlesSystem(){
 	id -= 1;
 
 	freeParticlesSystem();
+	delete pRend;
 
 }
 
-void VHParticlesSystem::initParticlesSystem(int maxParts){
+void VHParticlesSystem::initParticlesSystem(int newLeadParts, int newTrailLength){
 
-	nParts = maxParts;
+	nLeadParts = newLeadParts;
+	trailLength = newTrailLength;
+	nParts = nLeadParts*trailLength;
 
 	lockOpenGLContext();
 
-	/*AUX_RGBImageRec *pTextureImage = auxDIBImageLoad( "C:\\particle.bmp" );
+	//----- vbos
 
-    if( pTextureImage != NULL )
-	{
-        glGenTextures( 1, &g_textureID );
+	posVbo = new CudaVbo<cu::float3>(nParts, 0);
+	colourVbo = new CudaVbo<cu::float4>(nParts, 0);
+	indexVbo = new CudaVbo<unsigned int>(nParts, 1);
 
-		glBindTexture( GL_TEXTURE_2D, g_textureID );
-
-		glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
-		glTexImage2D( GL_TEXTURE_2D, 0, 3, pTextureImage->sizeX, pTextureImage->sizeY, 0,
-				     GL_RGB, GL_UNSIGNED_BYTE, pTextureImage->data );
-	}
-
-	if( pTextureImage )
-	{
-		if( pTextureImage->data )
-			free( pTextureImage->data );
-
-		free( pTextureImage );
-	}*/
-
-
-	glGenBuffersARB(1, &posVbo);
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, posVbo);
-	glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(cu::float3)*nParts, 0, GL_DYNAMIC_DRAW_ARB);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	cu::cutilSafeCall(cu::cudaGraphicsGLRegisterBuffer(&posVboRes, posVbo, cu::cudaGraphicsMapFlagsWriteDiscard));
-
-
-	glGenBuffersARB(1, &colourVbo);
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, colourVbo);
-	glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(cu::float4)*nParts, 0, GL_DYNAMIC_DRAW_ARB);
-	//glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(cu::float4)*2000000, 0, GL_DYNAMIC_DRAW_ARB);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	cu::cutilSafeCall(cu::cudaGraphicsGLRegisterBuffer(&colourVboRes, colourVbo, cu::cudaGraphicsMapFlagsWriteDiscard));
+	pRend->initParticlesRender();
 
 	unlockOpenGLContext();
 
@@ -135,13 +110,17 @@ void VHParticlesSystem::initParticlesSystem(int maxParts){
 
 	cu::cudaMalloc((void**)&dev_age,sizeof(float)*nParts);
 	cu::cudaMalloc((void**)&dev_life,sizeof(float)*nParts);
+	cu::cudaMalloc((void**)&dev_opafix,sizeof(char)*nParts);
 
 	cu::cudaMalloc((void**)&tempdev_pos,sizeof(cu::float3)*nParts);
 	cu::cudaMalloc((void**)&tempdev_vel,sizeof(cu::float3)*nParts);
 	cu::cudaMalloc((void**)&tempdev_age,sizeof(float)*nParts);
 	cu::cudaMalloc((void**)&tempdev_life,sizeof(float)*nParts);
 
-	host_pos = new float[maxParts*3];
+	cu::cudaMalloc((void**)&dev_indices,sizeof(unsigned int)*nParts);
+	cu::cudaMalloc((void**)&dev_keys,sizeof(float)*nParts);
+
+	host_pos = new float[nParts*3];
 
 	index = 0;
 
@@ -152,40 +131,46 @@ void VHParticlesSystem::initParticlesSystem(int maxParts){
 
 }
 
+
 void VHParticlesSystem::freeParticlesSystem(){
 
 	if(nParts == -1)
 		return;
-
+	
 	delete host_pos;
 
 	cu::cudaFree((void**)&dev_pos);
 	cu::cudaFree((void**)&dev_vel);
 	cu::cudaFree((void**)&dev_colour);
 	cu::cudaFree((void**)&dev_life);
+	cu::cudaFree((void**)&dev_opafix);
+
 
 	cu::cudaFree((void**)&tempdev_pos);
 	cu::cudaFree((void**)&tempdev_vel);
 	cu::cudaFree((void**)&tempdev_age);
 	cu::cudaFree((void**)&tempdev_life);
 
+	cu::cudaFree((void**)&dev_indices);
+	cu::cudaFree((void**)&dev_keys);
+
 	lockOpenGLContext();
 
-	cu::cudaGraphicsUnregisterResource(posVboRes);
-	cu::cudaGraphicsUnregisterResource(colourVboRes);
+	pRend->clearParticlesRender();
 
-	glDeleteTextures(1, &g_textureID);
-	glDeleteBuffersARB(1, &posVbo);
-	glDeleteBuffersARB(1, &colourVbo);
+	delete posVbo;
+	delete colourVbo;
+	delete indexVbo;
+
 
 	unlockOpenGLContext();
 
 }
 
-void VHParticlesSystem::changeMaxParts(int maxParts){
+void VHParticlesSystem::changeMaxParts(int newLeadParts, int newTrailLength){
 
 	freeParticlesSystem();
-	initParticlesSystem(maxParts);
+	initParticlesSystem(newLeadParts,newTrailLength);
 
 
 }
@@ -195,7 +180,7 @@ void VHParticlesSystem::resetParticles(){
 	if (nParts == -1)
 		return;
 
-	resetParticlesCu(dev_pos, dev_vel, dev_age, dev_life, nParts);
+	resetParticlesCu(dev_pos, dev_vel, dev_age, dev_life, dev_opafix, nParts);
 }
 
 
@@ -207,9 +192,22 @@ void VHParticlesSystem::emitParticles(){
 	if (partsLifeVar > partsLife)
 		partsLifeVar = partsLife;
 
+
 	for (int i = 0; i<nEmit; i++) {
 
-		int num = (int)((float)emitters[i].amount*dt);
+		float rate = ((float)emitters[i].amount)*dt;
+		int numLeadParts = 0;
+
+		if (rate < 1) {
+			if ((int)(time/dt) % ((int)(1/rate)) != 0)
+				return;
+			else
+				numLeadParts = 1;
+		} else {
+			numLeadParts = (int)((float)emitters[i].amount)*dt;
+		}
+
+		int num = numLeadParts*trailLength;
 
 		cu::float3* pos = new cu::float3[num];
 		cu::float3* vel = new cu::float3[num];
@@ -220,7 +218,7 @@ void VHParticlesSystem::emitParticles(){
 
 		ParticlesEmitter curEmit = emitters[i];
 
-		for (int j = 0; j<num; j++) {
+		for (int j = 0; j<numLeadParts; j++) {
 
 
 			do {
@@ -230,17 +228,16 @@ void VHParticlesSystem::emitParticles(){
 
 			} while (x*x + y*y + z*z > 1.0);
 
-				pos[j].x = curEmit.posX + curEmit.radius * x;
-				pos[j].y = curEmit.posY + curEmit.radius * y;
-				pos[j].z = curEmit.posZ + curEmit.radius * z;
+				pos[j*trailLength].x = curEmit.pos.x + curEmit.radius * x;
+				pos[j*trailLength].y = curEmit.pos.y + curEmit.radius * y;
+				pos[j*trailLength].z = curEmit.pos.z + curEmit.radius * z;
 
-			//age[j] = -1.0;
-			life[j] = partsLife - (partsLifeVar * frand());
+			life[j*trailLength] = partsLife - (partsLifeVar * frand());
 
-			index++;
+			index = index + trailLength;
 			if(index>nParts) {
 				index = 0;
-
+				
 			}
 		}
 
@@ -253,13 +250,10 @@ void VHParticlesSystem::emitParticles(){
 
 
 		initNewParticlesCu(tempdev_pos, tempdev_vel, tempdev_age, tempdev_life,
-							cu::make_float3(curEmit.posX,curEmit.posY,curEmit.posZ),
-							cu::make_float3(curEmit.velX,curEmit.velY,curEmit.velZ),
-							curEmit.radVelAmp,
-							cu::make_float3(curEmit.noiseVelAmpX,curEmit.noiseVelAmpY,curEmit.noiseVelAmpZ),
-							cu::make_float3(curEmit.noiseVelOffsetX,curEmit.noiseVelOffsetY,curEmit.noiseVelOffsetZ),
+							curEmit.pos, curEmit.vel,curEmit.radVelAmp,
+							curEmit.noiseVelAmp, curEmit.noiseVelOffset,
 							curEmit.noiseVelOct, curEmit.noiseVelLac, curEmit.noiseVelFreq,
-							0, time, num);
+							0, time, numLeadParts, trailLength);
 
 		cu::cudaMemcpy(dev_pos + index, tempdev_pos, sizeof(cu::float3)*num,cu::cudaMemcpyDeviceToDevice);
 		cu::cudaMemcpy(dev_vel + index, tempdev_vel, sizeof(cu::float3)*num,cu::cudaMemcpyDeviceToDevice);
@@ -282,103 +276,88 @@ void VHParticlesSystem::updateParticles(){
 
 	time = time+dt;
 
-	dampVelCu(dev_vel, velDamp, dt, nParts);
+	for(int i = 0; i<nLeadsForces; i++)
+		leadsForces[i]->applyForce(1);
 
-	if(fluidStrength != 0 && fluidSolver != NULL) {
 
-		cu::float3 invSize = cu::make_float3(1.0/fluidSolver->fluidSize.x,1.0/fluidSolver->fluidSize.y,
-											1.0/fluidSolver->fluidSize.z);
+	if (trailLength > 1) {
 
-		bindVelTex(fluidSolver->velArray);
-		addFluidForceKernelCu(dev_vel, dev_pos, fluidSolver->res, invSize, 1.0, dt,  nParts);
-		unbindVelTex();
+		int drawLines;
 
+		if(pRend->displayMode == VHParticlesRender::LINES)
+			drawLines = 1;
+		else
+			drawLines = 0;
+
+		emitTrailsCu(dev_pos, dev_vel, dev_age, dev_life, dev_opafix, inheritVel, inheritAge, partsLife, dt, nLeadParts, trailLength, drawLines);
+
+		for(int i = 0; i<nTrailsForces; i++)
+			trailsForces[i]->applyForce(0);
+
+
+		}
+
+	integrateParticlesCu(dev_pos, dev_vel, dev_age, dev_life, partsLife, dev_colour, opacity,
+						startColor, endColor, dev_opafix, dt, nParts, trailLength);
+
+	/*lockOpenGLContext();
+
+	GLfloat modelView[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);*/
+
+    // calculate half-angle vector between view and light
+	//cu::float3 viewVector = cu::make_float3(modelView[8],modelView[9],modelView[10]) ;
+
+
+	//calcDepthCu(dev_pos, dev_keys, dev_indices, viewVector, nParts);
+
+	/*if(pRend->displayMode == VHParticlesRender::SHADOWED_SPRITES) {
+
+			pRend->calcVectors();
+			cu::float3 halfVec = cu::make_float3(pRend->halfVector.x,pRend->halfVector.y,pRend->halfVector.z); 
+
+			calcDepthCu(dev_pos, dev_keys, dev_indices, halfVec, nParts);
+
+			if (pRend->sortParts)
+				cudppSort(m_sortHandle, dev_keys, dev_indices, 32, nParts);
 	}
 
-	if(gravityStrength != 0)
-		addGravityCu(dev_vel, gravityDir, gravityStrength, dt, nParts);
+	if((pRend->displayMode == VHParticlesRender::SPRITES || pRend->displayMode == VHParticlesRender::POINTS) && pRend->sortParts) {
 
-	if(noiseAmp.x != 0 || noiseAmp.y != 0 || noiseAmp.z != 0)
-		addTurbulenceCu(dev_vel, dev_pos, noiseAmp, noiseOffset, noiseOct, noiseLac, noiseFreq, dt, nParts);
+		//cu::float3 viewVec = cu::make_float3(modelView[8],modelView[9],modelView[10]) ;
+		cu::float3 viewVec = cu::make_float3(pRend->viewVector.x, pRend->viewVector.y, pRend->viewVector.y);
+		calcDepthCu(dev_pos, dev_keys, dev_indices, viewVec, nParts);
 
-	integrateParticlesCu(dev_pos, dev_vel, dev_age, dev_life, dev_colour, opacity, startColor, endColor, dt, nParts);
+		cudppSort(m_sortHandle, dev_keys, dev_indices, 32, nParts);
+
+
+	}*/
+
+	//unlockOpenGLContext();
+
 
 
 }
 
-void VHParticlesSystem::updateVBO(cu::float3* destPos, cu::float4* destColour){
+void VHParticlesSystem::updateVBOs(){
 
 	if (nParts == -1)
 		return;
 
-	cu::cudaMemcpy(destPos,dev_pos,sizeof(cu::float3)*nParts,cu::cudaMemcpyDeviceToDevice);
-	cu::cudaMemcpy(destColour,dev_colour,sizeof(cu::float4)*nParts,cu::cudaMemcpyDeviceToDevice);
+	cu::cudaMemcpy(posVbo->dPtr,dev_pos,sizeof(cu::float3)*nParts,cu::cudaMemcpyDeviceToDevice);
+	cu::cudaMemcpy(colourVbo->dPtr,dev_colour,sizeof(cu::float4)*nParts,cu::cudaMemcpyDeviceToDevice);
+	cu::cudaMemcpy(indexVbo->dPtr,dev_indices,sizeof(unsigned int)*nParts,cu::cudaMemcpyDeviceToDevice);
 
 }
+
 
 void VHParticlesSystem::draw(){
 
 	if (nParts == -1)
 		return;
 
-	glEnable(GL_TEXTURE_2D);
 
-	glBindTexture( GL_TEXTURE_2D, g_textureID );
-
-	float quadratic[] =  { 1.0f, 0.0f, 0.01f };
-    glPointParameterfvARB( GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic );
-
-    //glPointParameterfARB( GL_POINT_FADE_THRESHOLD_SIZE_ARB, 60.0f );
-
-    //glPointParameterfARB( GL_POINT_SIZE_MIN_ARB, 1.0f );
-    //glPointParameterfARB( GL_POINT_SIZE_MAX_ARB, 10.0f );
-
-    glTexEnvf( GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE );
-
-	glPointSize(pointSize);
-
-    glEnable( GL_POINT_SPRITE_ARB );
-
-	cu::float3 *dPosPtr;
-
-	cu::cutilSafeCall(cu::cudaGraphicsMapResources(1, &posVboRes, 0));
-	size_t num_bytes_pos;
-	cu::cutilSafeCall(cu::cudaGraphicsResourceGetMappedPointer((void **)&dPosPtr, &num_bytes_pos, posVboRes));
-
-	cu::float4 *dColourPtr;
-
-	cu::cutilSafeCall(cu::cudaGraphicsMapResources(1, &colourVboRes, 0));
-	size_t num_bytes_col;
-	cu::cutilSafeCall(cu::cudaGraphicsResourceGetMappedPointer((void **)&dColourPtr, &num_bytes_col, colourVboRes));
-
-
-	updateVBO(dPosPtr,dColourPtr);
-
-	cu::cutilSafeCall(cu::cudaGraphicsUnmapResources(1, &posVboRes, 0));
-	cu::cutilSafeCall(cu::cudaGraphicsUnmapResources(1, &colourVboRes, 0));
-
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, posVbo);
-	glVertexPointer(3, GL_FLOAT, 0, 0);
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, colourVbo);
-	glColorPointer(4, GL_FLOAT, 0, 0);
-	glEnableClientState(GL_COLOR_ARRAY);
-
-	glDrawArrays(GL_POINTS, 0, nParts);
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-
-
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-
-	glDisable( GL_POINT_SPRITE_ARB );
-
-	glDisable(GL_TEXTURE_2D);
-	glBindTexture( GL_TEXTURE_2D, 0 );
-
-
+	pRend->draw();
 }
 
 void VHParticlesSystem::lockOpenGLContext(){

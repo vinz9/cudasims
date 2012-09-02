@@ -2,7 +2,7 @@
 #define __VHFLUIDSOLVER3DHOUD_H__
 
 #include <RE/RE_Render.h>
-#include <UT/UT_XformOrder.h>
+#include <UT/ut_xformorder.h>
 #include "../../CudaCommon/CudaFluidSolver3D/vhFluidSolver3D.h"
 
 

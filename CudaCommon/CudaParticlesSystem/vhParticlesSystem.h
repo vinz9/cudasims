@@ -1,22 +1,25 @@
 #ifndef __VHPARTICLESSYTEM_H__
 #define __VHPARTICLESSYTEM_H__
 
-#include "vhParticlesObjects3D.h"
 #include <stdlib.h>
 #include <stdio.h> //very important
 #include <cmath>
 
+#include "vhParticlesRender.h"
+#include "../../Utils/cudaVbo.h"
+
 
 namespace cu{
 	#include <cuda_runtime_api.h>
-	#include <cuda_gl_interop.h>
+	//#include <cuda_gl_interop.h>
 	#include <vector_functions.h>
 
 	#include <cutil.h>
 	#include <cutil_inline_runtime.h>
 }
 
-#include "../CudaFluidSolver3D/vhFluidSolver3D.h"
+#include "vhParticlesObjects.h"
+
 
 struct VHParticlesSystem {
 
@@ -28,47 +31,42 @@ struct VHParticlesSystem {
 
 	int id;
 
-	VHFluidSolver3D* fluidSolver;
+	VHParticlesRender* pRend;
 
-	unsigned int g_textureID;
 
-	//GLuint posVbo;
-	unsigned int posVbo;
-	struct cu::cudaGraphicsResource *posVboRes;
+	int preview;
+	float opacity;
+	cu::float3 startColor;
+	cu::float3 endColor;
 
-	//GLuint colourVbo;
-	unsigned int colourVbo;
-	struct cu::cudaGraphicsResource *colourVboRes;
+	//------------------
 
 	float time;
 	float dt;
 
 	float partsLife;
 	float partsLifeVar;
-	float velDamp;
-	float gravityStrength;
-	cu::float3 gravityDir;
-	float fluidStrength;
 
-	cu::float3 noiseAmp;
-	cu::float3 noiseOffset;
-	int noiseOct;
-	float noiseLac;
-	float noiseFreq;
-
-	int preview;
-	float opacity;
-	float pointSize;
-	cu::float3 startColor;
-	cu::float3 endColor;
+	float inheritVel;
+	float inheritAge;
 
 
+	ParticlesForce* leadsForces[10];
+	ParticlesForce* trailsForces[10];
+	int nLeadsForces;
+	int nTrailsForces;
+
+	int nLeadParts;
+	int trailLength;
 	int nParts;
 	int index;
 
 	int nEmit;
 	ParticlesEmitter* emitters;
 
+	CudaVbo<cu::float3>		*posVbo;
+	CudaVbo<cu::float4>		*colourVbo;
+	CudaVbo<unsigned int>	*indexVbo;
 
 	float			*host_pos;
 	float			*host_vel;
@@ -78,20 +76,25 @@ struct VHParticlesSystem {
 	cu::float4      *dev_colour;
 	float			*dev_age;
 	float			*dev_life;
+	char			*dev_opafix;
+
+	unsigned int	*dev_indices;
+	float			*dev_keys;
+	
 
 	cu::float3		*tempdev_pos;
 	cu::float3		*tempdev_vel;
 	float		*tempdev_age;
 	float		*tempdev_life;
 
-	void initParticlesSystem(int maxParts);
+	void initParticlesSystem(int newLeadParts, int newTrailLength);
 	void freeParticlesSystem();
-	void changeMaxParts(int maxParts);
+	void changeMaxParts(int newLeadParts, int newTrailLength);
 	void resetParticles();
 	void emitParticles();
 	void updateParticles();
 
-	void updateVBO(cu::float3* destPos, cu::float4* destColour);
+	void updateVBOs();
 	void draw();
 
 	virtual void lockOpenGLContext();
@@ -99,22 +102,22 @@ struct VHParticlesSystem {
 
 };
 
-extern "C" void dampVelCu(cu::float3* vel, float damping, float dt, int nParts);
+extern "C" void integrateParticlesCu(cu::float3* pos, cu::float3* vel, float* age, float* life, float partsLife,
+								  cu::float4* colour, float opacity, cu::float3 col1, cu::float3 col2, char* opafix,
+									float dt, int nParts, int trailLength);
 
-extern "C" void addGravityCu(cu::float3* vel, cu::float3 gravityDir, float gravityStrength, float dt, int nParts);
+extern "C" void emitTrailsCu(cu::float3* pos, cu::float3* vel, float* age, float* life, char* opafix,
+							  float inheritVel, float inheritAge, float partsLife,
+							 float dt, int nLeadParts, int trailLength, int reorder);
 
-extern "C" void addTurbulenceCu(cu::float3* vel, cu::float3* pos, cu::float3 noiseAmp, cu::float3 noiseOffset,
-								int noiseOct, float noiseLac, float noiseFreq, float dt, int nParts);
 
-extern "C" void integrateParticlesCu(cu::float3* pos, cu::float3* vel, float* age, float* life,
-								  cu::float4* colour, float opacity, cu::float3 col1, cu::float3 col2,
-									float dt, int nParts);
-
-extern "C" void resetParticlesCu(cu::float3* pos, cu::float3* vel, float* age, float* life, int nParts);
+extern "C" void resetParticlesCu(cu::float3* pos, cu::float3* vel, float* age, float* life, char* opafix, int nParts);
 
 extern "C" void initNewParticlesCu(cu::float3* pos, cu::float3* vel, float* age, float* life,
 								   cu::float3 initPos, cu::float3 initVel, float radVelAmp,
 								   cu::float3 noiseVelmp, cu::float3 noiseVelOffset, int noiseVelOct, float noiseVelLac, float noiseVelFreq,
-								   float initLife, float time, int nParts);
+								   float initLife, float time, int nNewLeadParts, int trailLength);
+
+extern "C" void calcDepthCu(cu::float3* pos, float* keys, unsigned int *indices, cu::float3 vector, int nParts);
 
 #endif  // __DATABLOCK_H__

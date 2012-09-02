@@ -4,7 +4,6 @@
 #include "vhObjects.h"
 #include <stdio.h> //very important
 
-
 namespace cu{
 
 	#include <cuda_runtime_api.h>

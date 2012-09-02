@@ -15,7 +15,7 @@
 #include <GR/GR_RenderTable.h>
 
 #include "../SOP_FluidSolver/SOP_FluidSolver2D.h"
-#include "../SOP_FluidSolver/SOP_FluidSolver3D.h"
+#include "../SOP_FluidSOlver/SOP_FluidSolver3D.h"
 #include "../SOP_CudaParticles/SOP_CudaParticles.h"
 #include "GR_CudaHardware.h"
 
@@ -49,16 +49,16 @@ void newSopOperator(OP_OperatorTable *table) {
 			     SOP_CudaParticles::myConstructor,	// How to build the SOP
 			     SOP_CudaParticles::myTemplateList,	// My parameters
 			     1,				// Min # of sources
-			     2,				// Max # of sources
+			     4,				// Max # of sources
 				 0,
-				 OP_FLAG_GENERATOR)
-
+				 OP_FLAG_GENERATOR)				
+			     	
 	    );
 }
 
 void newRenderHook(GR_RenderTable *table)
 {
-
+    
 	GR_CudaHardware *cudaHook = new GR_CudaHardware;
     table->addHook(cudaHook, GR_RENDER_HOOK_VERSION);
 

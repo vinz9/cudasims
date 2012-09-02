@@ -212,7 +212,7 @@ extern "C" void jacobiCu(float* dev_pressure, float alpha, float rBeta, cu::cuda
 extern "C" void projectionCu(cu::float4* dev_vel, cu::cudaExtent res, cu::float3 invCellSize);
 
 extern "C" void addFluidForceKernelCu(cu::float3* vel, cu::float3* pos, cu::cudaExtent gres, cu::float3 invSize, float strength,
-									  float dt, int nParts);
+									  float dt, int nParts, int trailLength, int leads);
 
 
 

@@ -1,0 +1,15 @@
+uniform sampler2D tex;
+uniform vec2 texelSize;
+uniform float blurRadius;  
+
+void main()
+{
+    vec4 c;
+    c = texture2D(tex, gl_TexCoord[0].xy + vec2(-0.5, -0.5)*texelSize*blurRadius);
+    c += texture2D(tex, gl_TexCoord[0].xy + vec2(0.5, -0.5)*texelSize*blurRadius);
+    c += texture2D(tex, gl_TexCoord[0].xy + vec2(0.5, 0.5)*texelSize*blurRadius);
+    c += texture2D(tex, gl_TexCoord[0].xy + vec2(-0.5, 0.5)*texelSize*blurRadius);
+    c *= 0.25;
+
+    gl_FragColor = c;
+}
