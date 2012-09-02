@@ -156,7 +156,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="cudpp64.lib glew64.lib glut64.lib cudart.lib cutil64D.lib audiere.lib audiere_d.lib boost_date_time-vc80-mt-1_37.lib boost_date_time-vc80-mt-gd-1_37.lib boost_thread-vc80-mt-1_37.lib boost_thread-vc80-mt-gd-1_37.lib fbxsdk_md.lib fbxsdk_md_d.lib jpeg.lib jpeg_d.lib libarray.a libasprintf.lib libasprintf_d.lib libAU.a libBM.a libBR.a libBV.a libCH.a libcharset.lib libcharset_d.lib libCHOP.a libCHOPNET.a libCHOPZ.a libCHUI.a libCL.a libCLO.a libCMD.a libCOP2.a libCOPNET.a libCOPZ.a libCPUI.a libCVEX.a libDAE.a libDD.a libDM.a libDOP.a libDOPZ.a libdxf.a libEXPR.a libFBX.a libFS.a libFUI.a libFUSE.a libGAS.a libGB.a libGD.a libGDT.a libGEO.a libGOP.a libGP.a libGQ.a libGR.a libGR2D.a libGU.a libGUI.a libGVEX.a libHOM.a libHOMF.a libhptex.a libiconv.lib libiconv_d.lib libIFD.a libIM.a libIMG.a libIMG3D.a libIMGUI.a libIMH.a libIMP.a libIMS.a libintl.lib libintl_d.lib libIPR.a libJEDI.a libJIVE.a libKIN.a libLA.a libLM.a libMATUI.a libMC.a libMCS.a libMDS.a libMGR.a libMH.a libMIDI.a libMOT.a libMPI.a libMPS.a libMSS.a libMT.a libMV.a libMWS.a libOBJ.a libOH.a libOP.a libOP3D.a libopenexrh.a libOPUI.a libpaudio.a libPBR.a libPI.a libpng13.lib libpng13d.lib libPOP.a libPOPNET.a libPOPUI.a libPOPZ.a libPRM.a libPSI2.a libPXL.a libPY.a libRBD.a libRE.a libROP.a libRU.a libSHLF.a libSHOP.a libSI.a libSIM.a libSIMZ.a libsndfile.lib libsndfile_d.lib libSOHO.a libSOP.a libSOPZ.a libSS.a libSYS.a libTAKE.a libTBF.a libTHOR.a libTIL.a libtools.a libTS.a libUI.a libUT.a libVEX.a libVGEO.a libVM.a libVMAT.a libVOP.a libVOPNET.a libVPRM.a libVRAY.a libWIRE.a libxml2.lib libxml2_d.lib tbb.lib tbbmalloc.lib tbbmalloc_debug.lib tbbmalloc_proxy.lib tbbmalloc_proxy_debug.lib tbb_debug.lib tiff.lib tiff_d.lib zdll.lib zdll_d.lib"
-				OutputFile="C:\Users\vinz\Documents\houdini11.0\dso\SOP_CudaSimsDebug.dll"
+				OutputFile="C:\Users\vinz\Documents\houdini11.0\dso\SOP_vhCudaSimsDebug.dll"
 				SuppressStartupBanner="false"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Side Effects Software\Houdini 11.0.733\custom\houdini\dsolib\&quot;;&quot;$(CUDA_LIB_PATH)&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
 				GenerateDebugInformation="true"
@@ -317,7 +317,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="glew64.lib glut64.lib cudart.lib cutil64.lib audiere.lib audiere_d.lib boost_date_time-vc80-mt-1_37.lib boost_date_time-vc80-mt-gd-1_37.lib boost_thread-vc80-mt-1_37.lib boost_thread-vc80-mt-gd-1_37.lib fbxsdk_md.lib fbxsdk_md_d.lib jpeg.lib jpeg_d.lib libarray.a libasprintf.lib libasprintf_d.lib libAU.a libBM.a libBR.a libBV.a libCH.a libcharset.lib libcharset_d.lib libCHOP.a libCHOPNET.a libCHOPZ.a libCHUI.a libCL.a libCLO.a libCMD.a libCOP2.a libCOPNET.a libCOPZ.a libCPUI.a libCVEX.a libDAE.a libDD.a libDM.a libDOP.a libDOPZ.a libdxf.a libEXPR.a libFBX.a libFS.a libFUI.a libFUSE.a libGAS.a libGB.a libGD.a libGDT.a libGEO.a libGOP.a libGP.a libGQ.a libGR.a libGR2D.a libGU.a libGUI.a libGVEX.a libHOM.a libHOMF.a libhptex.a libiconv.lib libiconv_d.lib libIFD.a libIM.a libIMG.a libIMG3D.a libIMGUI.a libIMH.a libIMP.a libIMS.a libintl.lib libintl_d.lib libIPR.a libJEDI.a libJIVE.a libKIN.a libLA.a libLM.a libMATUI.a libMC.a libMCS.a libMDS.a libMGR.a libMH.a libMIDI.a libMOT.a libMPI.a libMPS.a libMSS.a libMT.a libMV.a libMWS.a libOBJ.a libOH.a libOP.a libOP3D.a libopenexrh.a libOPUI.a libpaudio.a libPBR.a libPI.a libpng13.lib libpng13d.lib libPOP.a libPOPNET.a libPOPUI.a libPOPZ.a libPRM.a libPSI2.a libPXL.a libPY.a libRBD.a libRE.a libROP.a libRU.a libSHLF.a libSHOP.a libSI.a libSIM.a libSIMZ.a libsndfile.lib libsndfile_d.lib libSOHO.a libSOP.a libSOPZ.a libSS.a libSYS.a libTAKE.a libTBF.a libTHOR.a libTIL.a libtools.a libTS.a libUI.a libUT.a libVEX.a libVGEO.a libVM.a libVMAT.a libVOP.a libVOPNET.a libVPRM.a libVRAY.a libWIRE.a libxml2.lib libxml2_d.lib tbb.lib tbbmalloc.lib tbbmalloc_debug.lib tbbmalloc_proxy.lib tbbmalloc_proxy_debug.lib tbb_debug.lib tiff.lib tiff_d.lib zdll.lib zdll_d.lib"
-				OutputFile="C:\Users\vinz\Documents\houdini11.0\dso\SOP_FluidSolver.dll"
+				OutputFile="C:\Users\vinz\Documents\houdini11.0\dso\SOP_vhCudaSims.dll"
 				SuppressStartupBanner="false"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Side Effects Software\Houdini 11.0.658\custom\houdini\dsolib\&quot;;&quot;$(CUDA_LIB_PATH)&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
 				GenerateDebugInformation="false"
@@ -486,7 +486,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="cudpp64.lib glew64.lib glut64.lib cudart.lib cutil64D.lib audiere.lib audiere_d.lib boost_date_time-vc80-mt-1_46_1.lib boost_date_time-vc80-mt-gd-1_46_1.lib boost_thread-vc80-mt-1_46_1.lib boost_thread-vc80-mt-gd-1_46_1.lib fbxsdk_md.lib fbxsdk_md_d.lib jpeg.lib jpeg_d.lib libarray.a libasprintf.lib libasprintf_d.lib libAU.a libBM.a libBR.a libBV.a libCH.a libcharset.lib libcharset_d.lib libCHOP.a libCHOPNET.a libCHOPZ.a libCHUI.a libCL.a libCLO.a libCMD.a libCOP2.a libCOPNET.a libCOPZ.a libCPUI.a libCVEX.a libDAE.a libDD.a libDM.a libDOP.a libDOPZ.a libdxf.a libEXPR.a libFBX.a libFS.a libFUI.a libFUSE.a libGAS.a libGB.a libGD.a libGDT.a libGEO.a libGOP.a libGP.a libGQ.a libGR.a libGR2D.a libGU.a libGUI.a libGVEX.a libHOM.a libHOMF.a libhptex.a libiconv.lib libiconv_d.lib libIFD.a libIM.a libIMG.a libIMG3D.a libIMGUI.a libIMH.a libIMP.a libIMS.a libintl.lib libintl_d.lib libIPR.a libJEDI.a libJIVE.a libKIN.a libLA.a libLM.a libMATUI.a libMC.a libMCS.a libMDS.a libMGR.a libMH.a libMIDI.a libMOT.a libMPI.a libMPS.a libMSS.a libMT.a libMV.a libMWS.a libOBJ.a libOH.a libOP.a libOP3D.a libOPUI.a libpaudio.a libPBR.a libPI.a libpng13.lib libpng13d.lib libPOP.a libPOPNET.a libPOPUI.a libPOPZ.a libPRM.a libPSI2.a libPXL.a libPY.a libRBD.a libRE.a libROP.a libRU.a libSHLF.a libSHOP.a libSI.a libSIM.a libSIMZ.a libsndfile.lib libsndfile_d.lib libSOHO.a libSOP.a libSOPZ.a libSS.a libSYS.a libTAKE.a libTBF.a libTHOR.a libTIL.a libtools.a libTS.a libUI.a libUT.a libVEX.a libVGEO.a libVM.a libVMAT.a libVOP.a libVOPNET.a libVPRM.a libVRAY.a libWIRE.a libxml2.lib libxml2_d.lib tbb.lib tbbmalloc.lib tbbmalloc_debug.lib tbbmalloc_proxy.lib tbbmalloc_proxy_debug.lib tbb_debug.lib tiff.lib tiff_d.lib zdll.lib zdll_d.lib"
-				OutputFile="C:\Users\vinz\Documents\houdini11.1\dso\SOP_CudaSimsDebug.dll"
+				OutputFile="C:\Users\vinz\Documents\houdini11.1\dso\SOP_vhCudaSimsDebug.dll"
 				SuppressStartupBanner="false"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Side Effects Software\Houdini 11.1.118\custom\houdini\dsolib\&quot;;&quot;$(CUDA_LIB_PATH)&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
 				GenerateDebugInformation="true"
@@ -647,7 +647,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="cudpp64.lib glew64.lib glut64.lib cudart.lib cutil64.lib audiere.lib audiere_d.lib boost_date_time-vc80-mt-1_46_1.lib boost_date_time-vc80-mt-gd-1_46_1.lib boost_thread-vc80-mt-1_46_1.lib boost_thread-vc80-mt-gd-1_46_1.lib fbxsdk_md.lib fbxsdk_md_d.lib jpeg.lib jpeg_d.lib libarray.a libasprintf.lib libasprintf_d.lib libAU.a libBM.a libBR.a libBV.a libCH.a libcharset.lib libcharset_d.lib libCHOP.a libCHOPNET.a libCHOPZ.a libCHUI.a libCL.a libCLO.a libCMD.a libCOP2.a libCOPNET.a libCOPZ.a libCPUI.a libCVEX.a libDAE.a libDD.a libDM.a libDOP.a libDOPZ.a libdxf.a libEXPR.a libFBX.a libFS.a libFUI.a libFUSE.a libGAS.a libGB.a libGD.a libGDT.a libGEO.a libGOP.a libGP.a libGQ.a libGR.a libGR2D.a libGU.a libGUI.a libGVEX.a libHOM.a libHOMF.a libhptex.a libiconv.lib libiconv_d.lib libIFD.a libIM.a libIMG.a libIMG3D.a libIMGUI.a libIMH.a libIMP.a libIMS.a libintl.lib libintl_d.lib libIPR.a libJEDI.a libJIVE.a libKIN.a libLA.a libLM.a libMATUI.a libMC.a libMCS.a libMDS.a libMGR.a libMH.a libMIDI.a libMOT.a libMPI.a libMPS.a libMSS.a libMT.a libMV.a libMWS.a libOBJ.a libOH.a libOP.a libOP3D.a libOPUI.a libpaudio.a libPBR.a libPI.a libpng13.lib libpng13d.lib libPOP.a libPOPNET.a libPOPUI.a libPOPZ.a libPRM.a libPSI2.a libPXL.a libPY.a libRBD.a libRE.a libROP.a libRU.a libSHLF.a libSHOP.a libSI.a libSIM.a libSIMZ.a libsndfile.lib libsndfile_d.lib libSOHO.a libSOP.a libSOPZ.a libSS.a libSYS.a libTAKE.a libTBF.a libTHOR.a libTIL.a libtools.a libTS.a libUI.a libUT.a libVEX.a libVGEO.a libVM.a libVMAT.a libVOP.a libVOPNET.a libVPRM.a libVRAY.a libWIRE.a libxml2.lib libxml2_d.lib tbb.lib tbbmalloc.lib tbbmalloc_debug.lib tbbmalloc_proxy.lib tbbmalloc_proxy_debug.lib tbb_debug.lib tiff.lib tiff_d.lib zdll.lib zdll_d.lib"
-				OutputFile="C:\Users\vinz\Documents\houdini11.1\dso\SOP_FluidSolver.dll"
+				OutputFile="C:\Users\vinz\Documents\houdini11.1\dso\SOP_vhCudaSims.dll"
 				SuppressStartupBanner="false"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Side Effects Software\Houdini 11.1.118\custom\houdini\dsolib\&quot;;&quot;$(CUDA_LIB_PATH)&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/lib&quot;"
 				GenerateDebugInformation="false"
@@ -1301,14 +1301,6 @@
 		<Filter
 			Name="Shaders"
 			>
-			<File
-				RelativePath="..\..\Shaders\basic.ps"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Shaders\basic.vs"
-				>
-			</File>
 			<File
 				RelativePath="..\..\Shaders\blur.ps"
 				>
