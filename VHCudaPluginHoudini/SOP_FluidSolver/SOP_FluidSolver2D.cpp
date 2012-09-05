@@ -230,11 +230,20 @@ OP_ERROR SOP_FluidSolver2D::cookMySop(OP_Context &context) {
 		if (boss->opStart("Building Volume")){
 
 			static float		 zero = 0.0;
+
+#ifdef HOUDINI_11
 			GB_AttributeRef fluidAtt = gdp->addAttrib("cudaFluidPreview", sizeof(int), GB_ATTRIB_INT, &zero);
 			gdp->attribs().getElement().setValue<int>(fluidAtt, fluidSolver->preview);
 
 			GB_AttributeRef solverIdAtt = gdp->addAttrib("solverId", sizeof(int), GB_ATTRIB_INT, &zero);
 			gdp->attribs().getElement().setValue<int>(solverIdAtt, fluidSolver->id);
+#else
+			GA_WOAttributeRef fluidAtt = gdp->addIntTuple(GA_ATTRIB_DETAIL, "cudaFluidPreview", 1);
+			gdp->element().setValue<int>(fluidAtt, fluidSolver->preview);
+
+			GA_WOAttributeRef solverIdAtt = gdp->addIntTuple(GA_ATTRIB_DETAIL, "solverId", 1);
+			gdp->element().setValue<int>(solverIdAtt, fluidSolver->id);
+#endif
 
 
 			UT_Matrix3              xform;
@@ -242,7 +251,11 @@ OP_ERROR SOP_FluidSolver2D::cookMySop(OP_Context &context) {
 			
 			volume = (GU_PrimVolume *)GU_PrimVolume::build(gdp);
 
+#ifdef HOUDINI_11
 			volume->getVertex().getPt()->getPos() = fluidPos;
+#else
+			volume->getVertexElement(0).getPt()->setPos(fluidPos);
+#endif
 
 			xform.identity();
 			xform.scale(fluidSolver->fluidSize.x*0.5, fluidSolver->fluidSize.y*0.5, 0.25);

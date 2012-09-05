@@ -315,6 +315,7 @@ OP_ERROR SOP_FluidSolver3D::cookMySop(OP_Context &context) {
 		if (boss->opStart("Building Volume")){
 
 			static float		 zero = 0.0;
+#ifdef HOUDINI_11
 			GB_AttributeRef fluidAtt = gdp->addAttrib("cudaFluid3DPreview", sizeof(int), GB_ATTRIB_INT, &zero);
 			gdp->attribs().getElement().setValue<int>(fluidAtt, fluidSolver->preview);
 
@@ -324,11 +325,29 @@ OP_ERROR SOP_FluidSolver3D::cookMySop(OP_Context &context) {
 			GB_AttributeRef solverIdAtt = gdp->addAttrib("solverId", sizeof(int), GB_ATTRIB_INT, &zero);
 			gdp->attribs().getElement().setValue<int>(solverIdAtt, fluidSolver->id);
 
+#else
+			GA_WOAttributeRef fluidAtt = gdp->addIntTuple(GA_ATTRIB_DETAIL, "cudaFluid3DPreview", 1);
+			gdp->element().setValue<int>(fluidAtt, fluidSolver->preview);
+			
+
+			GA_WOAttributeRef fluidSliceAtt = gdp->addIntTuple(GA_ATTRIB_DETAIL, "sliceDisplay", 1);
+			gdp->element().setValue<int>(fluidSliceAtt, fluidSolver->displaySlice);
+
+			GA_WOAttributeRef solverIdAtt = gdp->addIntTuple(GA_ATTRIB_DETAIL, "solverId", 1);
+			gdp->element().setValue<int>(solverIdAtt, fluidSolver->id);
+#endif
+
 			GEO_AttributeHandle         name_gah;
+			
 			int	def = -1;
 
+#ifdef HOUDINI_11
 			gdp->addPrimAttrib("name", sizeof(int), GB_ATTRIB_INDEX, &def);
+#else
+			gdp->addStringTuple(GA_ATTRIB_PRIMITIVE, "name", 1);
+#endif
 			name_gah = gdp->getPrimAttribute("name");
+
 
 
 			UT_Matrix3              xform;
@@ -336,7 +355,11 @@ OP_ERROR SOP_FluidSolver3D::cookMySop(OP_Context &context) {
 
 			volume = (GU_PrimVolume *)GU_PrimVolume::build(gdp);
 
+#ifdef HOUDINI_11
 			volume->getVertex().getPt()->getPos() = fluidPos;
+#else
+			volume->getVertexElement(0).getPt()->setPos(fluidPos);
+#endif
 
 			xform.identity();
 			xform.scale(fluidSolver->fluidSize.x*0.5, fluidSolver->fluidSize.y*0.5, fluidSolver->fluidSize.z*0.5);
@@ -348,22 +371,29 @@ OP_ERROR SOP_FluidSolver3D::cookMySop(OP_Context &context) {
 			name_gah.setString("density");
 
 			velXVolume = (GU_PrimVolume *)GU_PrimVolume::build(gdp);
+			velYVolume = (GU_PrimVolume *)GU_PrimVolume::build(gdp);
+			velZVolume = (GU_PrimVolume *)GU_PrimVolume::build(gdp);
+
+#ifdef HOUDINI_11
 			velXVolume->getVertex().getPt()->getPos() = fluidPos;
+			velYVolume->getVertex().getPt()->getPos() = fluidPos;
+			velZVolume->getVertex().getPt()->getPos() = fluidPos;
+
+#else
+			velXVolume->getVertexElement(0).getPt()->setPos(fluidPos);
+			velYVolume->getVertexElement(0).getPt()->setPos(fluidPos);
+			velZVolume->getVertexElement(0).getPt()->setPos(fluidPos);
+#endif
+			
 			velXVolume->setTransform(xform);
+			velYVolume->setTransform(xform);
+			velZVolume->setTransform(xform);
 
 			name_gah.setElement(velXVolume);
 			name_gah.setString("vel.x");
 
-			velYVolume = (GU_PrimVolume *)GU_PrimVolume::build(gdp);
-			velYVolume->getVertex().getPt()->getPos() = fluidPos;
-			velYVolume->setTransform(xform);
-
 			name_gah.setElement(velYVolume);
 			name_gah.setString("vel.y");
-
-			velZVolume = (GU_PrimVolume *)GU_PrimVolume::build(gdp);
-			velZVolume->getVertex().getPt()->getPos() = fluidPos;
-			velZVolume->setTransform(xform);
 
 			name_gah.setElement(velZVolume);
 			name_gah.setString("vel.z");

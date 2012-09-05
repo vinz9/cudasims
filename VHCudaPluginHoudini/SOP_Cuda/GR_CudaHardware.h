@@ -29,26 +29,50 @@ public:
 
 	static int preview(const GU_Detail *gdp);
 
-	int		 getWireMask(GU_Detail *gdp, const GR_DisplayOption * /*dopt*/) const {
+#ifdef HOUDINI_11
+
+	int		 getWireMask(GU_Detail *gdp, const GR_DisplayOption * ) const {
 		if (preview(gdp))
 			return 0;
 		else
 			return GEOPRIMALL;
     }
 
-    virtual void renderWire(GU_Detail *gdp,
+    int		 getShadedMask(GU_Detail *gdp, const GR_DisplayOption * ) const {
+		if (preview(gdp))
+			return 0;
+		else
+			return GEOPRIMALL;
+    }
+
+#else
+	virtual GA_PrimCompat::TypeMask
+        getWireMask(GU_Detail * /*gdp*/, const GR_DisplayOption *dopt) const
+    {
+        // If hull display is on, we don't draw anything.
+        if (dopt->drawPrimHulls())
+            return GEO_PrimTypeCompat::GEOPRIMNONE;
+        else
+            return GEO_PrimTypeCompat::GEOPRIMALL;
+    }
+
+    virtual GA_PrimCompat::TypeMask
+        getShadedMask(GU_Detail * /*gdp*/, const GR_DisplayOption *dopt) const
+    {
+        // If hull display is on, we don't draw anything.
+        if (dopt->drawPrimHulls())
+            return GEO_PrimTypeCompat::GEOPRIMNONE;
+        else
+            return GEO_PrimTypeCompat::GEOPRIMALL;
+    }
+#endif
+
+	virtual void renderWire(GU_Detail *gdp,
 			RE_Render &ren,
 			const GR_AttribOffset &ptinfo,
 			const GR_DisplayOption *dopt,
 			float lod,
 			const GU_PrimGroupClosure *hidden_geometry);
-
-    int		 getShadedMask(GU_Detail *gdp, const GR_DisplayOption * /*dopt*/) const {
-		if (preview(gdp))
-			return 0;
-		else
-			return GEOPRIMALL;
-    }
 
     virtual void renderShaded(GU_Detail *gdp,
 			RE_Render &ren,

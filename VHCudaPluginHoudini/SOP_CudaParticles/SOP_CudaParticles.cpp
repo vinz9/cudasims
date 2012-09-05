@@ -219,7 +219,7 @@ OP_ERROR SOP_CudaParticles::cookMySop(OP_Context &context) {
 
 	oldf = f;
 	f =	context.getFrame();
-	GEO_ParticleVertex* pvtx;
+	//GEO_ParticleVertex* pvtx;
 
 	double t = context.getTime();
 
@@ -302,11 +302,23 @@ OP_ERROR SOP_CudaParticles::cookMySop(OP_Context &context) {
 			//gdp->clearAndDestroy();
 
 			static float		 zero = 0.0;
+
+#ifdef HOUDINI_11
+
 			GB_AttributeRef partsAtt = gdp->addAttrib("cudaParticlesPreview", sizeof(int), GB_ATTRIB_INT, &zero);
 			gdp->attribs().getElement().setValue<int>(partsAtt, particlesSystem->preview);
 
 			GB_AttributeRef systemIdAtt = gdp->addAttrib("systemId", sizeof(int), GB_ATTRIB_INT, &zero);
 			gdp->attribs().getElement().setValue<int>(systemIdAtt, particlesSystem->id);
+#else
+
+			GA_WOAttributeRef partsAtt = gdp->addIntTuple(GA_ATTRIB_DETAIL, "cudaParticlesPreview", 1);
+			gdp->element().setValue<int>(partsAtt, particlesSystem->preview);
+
+			GA_WOAttributeRef systemIdAtt = gdp->addIntTuple(GA_ATTRIB_DETAIL, "systemId", 1);
+			gdp->element().setValue<int>(systemIdAtt, particlesSystem->id);
+
+#endif
 
 			if (f < STARTFRAME(t)) {
 
@@ -326,9 +338,15 @@ OP_ERROR SOP_CudaParticles::cookMySop(OP_Context &context) {
 
 				//hSystem = (GEO_PrimParticle *)gdp->appendPrimitive(GEOPRIMPART);
 				//hSystem->clearAndDestroy();
-
-				GB_AttributeRef hVelocity = gdp->addPointAttrib("v", sizeof(UT_Vector3),GB_ATTRIB_VECTOR, 0);
+#ifdef HOUDINI_11
 				GB_AttributeRef hLife = gdp->addPointAttrib("life", sizeof(float)*2,GB_ATTRIB_FLOAT, 0);
+				GB_AttributeRef hVelocity = gdp->addPointAttrib("v", sizeof(UT_Vector3),GB_ATTRIB_VECTOR, 0);
+#else
+				GA_RWAttributeRef    hVelocity = gdp->addFloatTuple(GA_ATTRIB_POINT, "v", 3);
+				GA_RWAttributeRef hLife = gdp->addFloatTuple(GA_ATTRIB_POINT, "life", 2);
+#endif
+				
+				
 
 				if(particlesSystem->preview!=1) {
 
@@ -566,7 +584,7 @@ OP_ERROR SOP_CudaParticles::cookMySop(OP_Context &context) {
 						GEO_Point* ppt;
 						int i = 0;
 						 UT_Vector4		p;
-
+#ifdef HOUDINI_11
 						FOR_ALL_GPOINTS(gdp, ppt) {
 
 							ppt->getPos() = UT_Vector4(particlesSystem->host_pos[i*3],
@@ -576,6 +594,7 @@ OP_ERROR SOP_CudaParticles::cookMySop(OP_Context &context) {
 							i++;
 
 						}
+#endif
 
 						/*pvtx = hSystem->iterateInit();
 
