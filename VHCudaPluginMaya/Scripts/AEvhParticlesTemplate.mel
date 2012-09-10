@@ -1,0 +1,52 @@
+global proc AEvhParticlesTemplate(string $nodeName)
+{
+    
+	editorTemplate -beginScrollLayout;
+
+		editorTemplate -beginLayout "Solver" -collapse 0;
+			editorTemplate -addControl "maxParts";
+      editorTemplate -addControl "substeps";
+      editorTemplate -addControl "startFrame";
+      editorTemplate -addControl "life";
+      editorTemplate -addControl "lifeVar";
+		editorTemplate -endLayout;
+    
+    editorTemplate -beginLayout "Display" -collapse 0;
+    	editorTemplate -addControl "preview";
+    	editorTemplate -label "Opacity Scale" -addControl "opaScale";
+    	editorTemplate -addControl "pointSize";
+    	editorTemplate -addControl "startColor";
+    	editorTemplate -addControl "endColor";
+  
+  editorTemplate -beginLayout "SelfShadowing" -collapse 0; 	
+  		editorTemplate -addControl "shadedMode";
+  		editorTemplate -addControl "spritePath";
+    	editorTemplate -addControl "lightPos";
+    	editorTemplate -addControl "lightTarget";
+    	editorTemplate -addControl "lightColor";
+    	editorTemplate -addControl "colorAttenuation";
+    	editorTemplate -addControl "shadowAlpha";
+    editorTemplate -endLayout;	
+    	
+     editorTemplate -endLayout;
+		
+		
+		editorTemplate -beginLayout "Forces" -collapse 0;
+      editorTemplate -label "Damping" -addControl "velDamp";
+      editorTemplate -addControl "gravityStrength";
+      editorTemplate -addControl "gravityDir";
+      editorTemplate -addControl "fluidStrength";
+      editorTemplate -label "Noise Amplitude" -addControl "noiseAmp";
+      editorTemplate -addControl "noiseOffset";
+      editorTemplate -label "Noise Frequency" -addControl "noiseFreq";
+      editorTemplate -label "Noise Octaves" -addControl "noiseOct";
+      editorTemplate -label "Noise Lacunarity" -addControl "noiseLacun";
+      
+		editorTemplate -endLayout;
+
+     AEabstractBaseCreateTemplate $nodeName;
+
+     editorTemplate -addExtraControls;
+
+   editorTemplate -endScrollLayout;
+}

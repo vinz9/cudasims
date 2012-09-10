@@ -1,0 +1,238 @@
+global proc string myCreateFluid( int $is2d)
+{
+		
+	string $flShad = `shadingNode -asShader fluidShape`;
+
+// 	setAttr -lock yes ($flShad + ".is2d") $is2d;
+ 	setAttr ($flShad + ".is2d") $is2d;
+ 	
+ 	
+
+	// 2D fluid should show outline by default, but for
+	// a 2D fluid this means Outline, not Bottom.
+	if( $is2d ) {
+		setAttr ($flShad + ".boundaryDraw") 2;
+		setAttr ($flShad + ".resolutionD") 1;
+		setAttr ($flShad + ".dimensionsD") 0.25;
+	}
+	
+
+	// Use startFrame to make sure that unit conversion happens tastefully
+	// and that attribute editor is up to date
+	setAttr ($flShad + ".startFrame") 1;
+
+	string $flSG = `sets -renderable true -noSurfaceShader true -empty -name ($flShad + "SG")`;
+	connectAttr -f ($flShad +".outColor") ($flSG + ".volumeShader");
+	connectAttr -f ($flShad +".instObjGroups[0]") ($flSG + ".dagSetMembers[0]");
+	return( $flShad );
+}	
+
+global proc fluid2DSetup(string $prefix) {
+
+    string $cFluidSolverTransform = "cudaFluid"+$prefix;
+    string $cFluidSolver = ($cFluidSolverTransform+"Shape");
+    string $mFluid = "cudaFluidDisplay"+$prefix;
+    
+	createNode vhFluidSolver2D -n ($cFluidSolver);
+   // pickWalk -d up;
+   // rename ($cFluidSolverTransform);
+
+	myCreateFluid(true);
+	pickWalk -d up;
+	rename ($mFluid);
+	setAttr ($mFluid+"Shape.densityMethod") 1;
+	setAttr ($mFluid+"Shape.velocityMethod") 1;
+
+    connectAttr -f ($mFluid+"Shape.message") ($cFluidSolver+".mayaFluid");
+	//setAttr -type "string" ($cFluidSolver+".mayaFluidName") ($mFluid+"Shape");
+	connectAttr time1.outTime ($cFluidSolver+".inTime");
+	//connectAttr ($cFluidSolver+".outTime") ($mFluid+"Shape.currentTime");
+
+	connectAttr -f ($cFluidSolver+".sizeX") ($mFluid+"Shape.dimensionsW");
+	connectAttr -f ($cFluidSolver+".sizeY") ($mFluid+"Shape.dimensionsH");
+	connectAttr -f ($cFluidSolver+".resX") ($mFluid+"Shape.resolutionW");
+    connectAttr -f ($cFluidSolver+".resY") ($mFluid+"Shape.resolutionH");
+    
+    parent ($mFluid) ($cFluidSolverTransform);
+    
+    select ($mFluid);
+    HideSelectedObjects;
+    
+    string $cTransform = "cSolverEmptyTr"+$prefix;
+    group -em -n ($cTransform);
+    parent ($cTransform) ($cFluidSolverTransform);
+
+    connectAttr ($cFluidSolver+".outTime") ($cTransform+".rotateX");    
+    
+    /*setAttr -lock true ($mFluid+".tx");
+    setAttr -lock true ($mFluid+".ty");
+    setAttr -lock true ($mFluid+".tz");
+    setAttr -lock true ($mFluid+".rx");
+    setAttr -lock true ($mFluid+".ry");
+    setAttr -lock true ($mFluid+".rz");
+    setAttr -lock true ($mFluid+".sx");
+    setAttr -lock true ($mFluid+".sy");
+    setAttr -lock true ($mFluid+".sz");*/
+
+    select -cl;
+    string $emitNameA = "fluidEmitA"+$prefix;    
+    fluidEmitter -n ($emitNameA);
+    move -a 0 -4 0;
+    connectAttr -f ($emitNameA+".message") ($cFluidSolver+".emitters[0]");
+    setAttr ($emitNameA+".maxDistance") 0.5;
+    
+    select -cl;
+    string $emitNameB = "fluidEmitB"+$prefix;    
+    fluidEmitter -n ($emitNameB);
+    move -a 2 -2 0;
+    connectAttr -f ($emitNameB+".message") ($cFluidSolver+".emitters[1]");
+    setAttr ($emitNameB+".maxDistance") 1;
+    
+    select -cl;
+    string $colNameA = "colA"+$prefix;
+    spaceLocator -n ($colNameA);
+    addAttr -ln "radius"  -at double ($colNameA);
+    setAttr -e-keyable true ($colNameA+".radius");
+    setAttr ($colNameA+".radius") 1;
+    
+    connectAttr -f ($colNameA+".message") ($cFluidSolver+".colliders[0]");
+    
+    
+	
+}
+
+global proc fluid3DSetup(string $prefix) {
+
+    string $cFluidSolverTransform = "cudaFluid"+$prefix;
+    string $cFluidSolver = ($cFluidSolverTransform+"Shape");
+    string $mFluid = "cudaFluidDisplay"+$prefix;
+    
+	createNode vhFluidSolver3D -n ($cFluidSolver);
+    //pickWalk -d up;
+    //rename "cudaFluid";
+
+	myCreateFluid(false);
+	pickWalk -d up;
+	rename ($mFluid);
+	setAttr ($mFluid+"Shape.densityMethod") 1;
+	setAttr ($mFluid+"Shape.velocityMethod") 1;
+
+    connectAttr -f ($mFluid+"Shape.message") ($cFluidSolver+".mayaFluid");
+	//setAttr -type "string" ($cFluidSolver+".mayaFluidName") ($mFluid+"Shape");
+	connectAttr time1.outTime ($cFluidSolver+".inTime");
+	//connectAttr ($cFluidSolver+".outTime") ($mFluid+"Shape.currentTime");
+
+	connectAttr -f ($cFluidSolver+".sizeX") ($mFluid+"Shape.dimensionsW");
+	connectAttr -f ($cFluidSolver+".sizeY") ($mFluid+"Shape.dimensionsH");
+	connectAttr -f ($cFluidSolver+".sizeZ") ($mFluid+"Shape.dimensionsD");
+	connectAttr -f ($cFluidSolver+".resX") ($mFluid+"Shape.resolutionW");
+    connectAttr -f ($cFluidSolver+".resY") ($mFluid+"Shape.resolutionH");
+    connectAttr -f ($cFluidSolver+".resZ") ($mFluid+"Shape.resolutionD");
+    
+    parent ($mFluid) ($cFluidSolverTransform);
+    
+    select ($mFluid);
+    HideSelectedObjects;
+    
+    string $cTransform = "cSolverEmptyTr"+$prefix;
+    group -em -n ($cTransform);
+    parent ($cTransform) ($cFluidSolverTransform);
+
+    connectAttr ($cFluidSolver+".outTime") ($cTransform+".rotateX");    
+    
+    /*setAttr -lock true ($mFluid+".tx");
+    setAttr -lock true ($mFluid+".ty");
+    setAttr -lock true ($mFluid+".tz");
+    setAttr -lock true ($mFluid+".rx");
+    setAttr -lock true ($mFluid+".ry");
+    setAttr -lock true ($mFluid+".rz");
+    setAttr -lock true ($mFluid+".sx");
+    setAttr -lock true ($mFluid+".sy");
+    setAttr -lock true ($mFluid+".sz");*/
+
+    select -cl;
+    string $emitNameA = "fluidEmitA"+$prefix;    
+    fluidEmitter -n ($emitNameA);
+    move -a 0 -4 0;
+    connectAttr -f ($emitNameA+".message") ($cFluidSolver+".emitters[0]");
+    setAttr ($emitNameA+".maxDistance") 1;
+    
+  /* select -cl;
+    string $emitNameB = "fluidEmitB"+$prefix;    
+    fluidEmitter -n ($emitNameB);
+    move -a 2 -2 0;
+    connectAttr -f ($emitNameB+".message") ($cFluidSolver+".emitters[1]");
+    setAttr ($emitNameB+".maxDistance") 1;*/
+    
+   select -cl;
+    string $colNameA = "colA"+$prefix;
+    spaceLocator -n ($colNameA);
+    addAttr -ln "radius"  -at double ($colNameA);
+    setAttr -e-keyable true ($colNameA+".radius");
+    setAttr ($colNameA+".radius") 1;
+    
+    connectAttr -f ($colNameA+".message") ($cFluidSolver+".colliders[0]");
+    
+   /* select -cl;
+    $colNameA = "colB"+$prefix;
+    spaceLocator -n ($colNameA);
+    addAttr -ln "radius"  -at double ($colNameA);
+    setAttr -e-keyable true ($colNameA+".radius");
+    setAttr ($colNameA+".radius") 2;
+    
+    connectAttr -f ($colNameA+".message") ($cFluidSolver+".colliders[1]");*/
+    
+    select -r ($cFluidSolverTransform);
+	
+}
+
+global proc setupCudaParticles(string $prefix){
+
+    string $cParticlesSystemTransform = "cudaParticles"+$prefix;
+    string $cParticlesSystem = ($cParticlesSystemTransform+"Shape");
+   
+	createNode vhParticles -n ($cParticlesSystem);
+	
+	connectAttr time1.outTime ($cParticlesSystem+".inTime");
+	
+	string $cTransform = "cParticlesEmptyTr"+$prefix;
+    group -em -n ($cTransform);
+    parent ($cTransform) ($cParticlesSystemTransform);
+
+    connectAttr ($cParticlesSystem+".outTime") ($cTransform+".rotateX");
+	
+	select -cl;
+    string $emitNameA = "emitA"+$prefix;
+    spaceLocator -n ($emitNameA);
+    
+    addAttr -ln "amount"  -at double ($emitNameA);
+    setAttr -e-keyable true ($emitNameA+".amount");
+    setAttr ($emitNameA+".amount") 200000;
+    
+    addAttr -ln "radius"  -at double ($emitNameA);
+    setAttr -e-keyable true ($emitNameA+".radius");
+    setAttr ($emitNameA+".radius") 1;
+    
+    connectAttr -f ($emitNameA+".message") ($cParticlesSystem+".emitters[0]");
+
+
+}
+
+global proc setupFluidDrivenParts(string $prefix) {
+
+    fluid3DSetup($prefix);
+    setupCudaParticles($prefix);
+    
+    connectAttr -f ("cudaFluid"+$prefix+"Shape.message") ("cudaParticles"+$prefix+"Shape.fluid");
+    connectAttr -f ("fluidEmitA"+$prefix+".translate") ("emitA"+$prefix+".translate");
+    
+    setAttr ("cudaParticles"+$prefix+"Shape.fluidStrength") 1;
+    setAttr ("cudaParticles"+$prefix+"Shape.velDamp") 24;
+
+}
+
+//setupFluidDrivenParts("vh");
+//setupCudaParticles("vh");
+
+//fluid2DSetup("vh");
+//fluid3DSetup("vh");
