@@ -3,7 +3,7 @@
 #include "fluidNode2D.h"
 #include "fluidNode3D.h"
 #include "particlesNode.h"
-#include "initGLCuda.h"
+//#include "initGLCuda.h"
 
 MStatus initializePlugin( MObject obj )
 { 
@@ -19,8 +19,20 @@ MStatus initializePlugin( MObject obj )
 	status = plugin.registerNode("vhParticles", particlesNode::id, particlesNode::creator,
 		particlesNode::initialize, MPxNode::kLocatorNode);
 
-	status = plugin.registerNode("initGLCuda", initGLCuda::id, initGLCuda::creator,
-		initGLCuda::initialize);
+	//status = plugin.registerNode("initGLCuda", initGLCuda::id, initGLCuda::creator,
+	//	initGLCuda::initialize);
+
+	cu::cutilSafeCall(cu::cudaThreadExit());
+
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+	  std::cout << glewGetErrorString(err) << std::endl;
+	}
+
+	cu::cutilSafeCall(cu::cudaGLSetGLDevice( cu::cutGetMaxGflopsDeviceId() ));
+	cu::cudaGraphicsGLRegisterBuffer(NULL, 0, cu::cudaGraphicsMapFlagsWriteDiscard); //does nothing but prevents crash
+	cu::cudaGraphicsUnregisterResource(0);
 	
 	return status;
 }
@@ -36,7 +48,9 @@ MStatus uninitializePlugin( MObject obj )
 
 	status = plugin.deregisterNode(particlesNode::id);
 
-	status = plugin.deregisterNode(initGLCuda::id);
+	//status = plugin.deregisterNode(initGLCuda::id);
+
+	cu::cutilSafeCall(cu::cudaThreadExit());
 
 	return status;
 }

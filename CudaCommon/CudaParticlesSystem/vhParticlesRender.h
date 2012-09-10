@@ -42,6 +42,7 @@ struct VHParticlesRender {
 
 	char* spritePath;
 
+
 	vec3f				lightPos, lightTarget, lightColor, colorAttenuation;
 	float shadowAlpha;
 

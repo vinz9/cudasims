@@ -435,7 +435,7 @@
 				AdditionalOptions="/Gm /EHsc /ZI /I &quot;.&quot; /D &quot;WIN32&quot; /D &quot;_DEBUG&quot; /RTC1 /c"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(CUDA_INC_PATH)&quot;;&quot;C:\Program Files\Autodesk\Maya2013\include&quot;;&quot;$(NVSDKCOMPUTE_ROOT)/C/common/inc&quot;"
-				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,_AFXDLL,_MBCS,NT_PLUGIN,REQUIRE_IOSTREAM,__LITTLE_ENDIAN__"
+				PreprocessorDefinitions="MAYA,WIN32,_DEBUG,_WINDOWS,_AFXDLL,_MBCS,NT_PLUGIN,REQUIRE_IOSTREAM,__LITTLE_ENDIAN__"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
@@ -751,10 +751,26 @@
 			<File
 				RelativePath="..\VHCudaPluginMaya\initGLCuda.cpp"
 				>
+				<FileConfiguration
+					Name="Debug2013|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\VHCudaPluginMaya\initGLCuda.h"
 				>
+				<FileConfiguration
+					Name="Debug2013|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\VHCudaPluginMaya\particlesNode.cpp"

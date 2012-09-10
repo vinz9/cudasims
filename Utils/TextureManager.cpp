@@ -6,6 +6,9 @@
 //For use with OpenGL and the FreeImage library
 //**********************************************
 
+#ifdef MAYA
+	#include <maya/MImage.h>
+#endif
 
 #include "TextureManager.h"
 #include <GL/glew.h>
@@ -16,6 +19,7 @@
 	#include <RE/RE_Render.h>
 	#include <IMG/IMG_File.h>
 #endif
+
 
 TextureManager* TextureManager::m_inst(0);
 
@@ -138,6 +142,17 @@ bool TextureManager::LoadTexture(const char* filename, const unsigned int texID,
 
 
 	#endif
+
+	#ifdef MAYA
+
+	 MImage image;
+     MStatus stat = image.readFromFile(filename);
+	 if (stat) {
+        image.getSize(width, height);
+		bits = (BYTE*)(image.pixels());
+	 }
+
+	#endif	
 
 	//if this somehow one of these failed (they shouldn't), return failure
 	if((bits == 0) || (width == 0) || (height == 0))

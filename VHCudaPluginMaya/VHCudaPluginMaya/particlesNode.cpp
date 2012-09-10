@@ -36,6 +36,30 @@ MObject		particlesNode::aNoiseOct;
 MObject		particlesNode::aNoiseLacun;
 
 MObject		particlesNode::aPreview;
+MObject		particlesNode::aShadedMode;
+MObject		particlesNode::aSpritePath;
+
+MObject		particlesNode::aLightPosX;
+MObject		particlesNode::aLightPosY;
+MObject		particlesNode::aLightPosZ;
+MObject		particlesNode::aLightPos;
+
+MObject		particlesNode::aLightTargetX;
+MObject		particlesNode::aLightTargetY;
+MObject		particlesNode::aLightTargetZ;
+MObject		particlesNode::aLightTarget;
+
+MObject		particlesNode::aLightColorR;
+MObject		particlesNode::aLightColorG;
+MObject		particlesNode::aLightColorB;
+MObject		particlesNode::aLightColor;
+
+MObject		particlesNode::aColorAttenuationR;
+MObject		particlesNode::aColorAttenuationG;
+MObject		particlesNode::aColorAttenuationB;
+MObject		particlesNode::aColorAttenuation;
+MObject		particlesNode::aShadowAlpha;
+
 MObject		particlesNode::aOpaScale;
 MObject		particlesNode::aPointSize;
 
@@ -80,11 +104,104 @@ void particlesNode::draw( M3dView & view, const MDagPath & path,
 
 		//if ( ( style == M3dView::kFlatShaded ) ||  ( style == M3dView::kGouraudShaded ) ) {  
 
+
+				MPlug shadedModePlug( thisNode, aShadedMode );
+				int shadedMode;
+				shadedModePlug.getValue(shadedMode );
+
+				MDataHandle spritePathHandle;
+
+				MPlug spritePathPlug( thisNode, aSpritePath );
+				spritePathPlug.getValue(spritePathHandle );
+				
+				MString spritePath = spritePathHandle.asString();
+				MString oldSprite = particlesSystem->pRend->spritePath;
+
+				if (spritePath != oldSprite) {
+					//particlesSystem->lockOpenGLContext();
+					particlesSystem->pRend->loadSprite((char*)(spritePath.asChar()));
+					//particlesSystem->unlockOpenGLContext();
+					particlesSystem->pRend->spritePath = (char*)(spritePath.asChar());
+				}
+
+
+				if(shadedMode) {
+					particlesSystem->pRend->displayMode = 3;
+					particlesSystem->pRend->blendingMode = 1;
+					particlesSystem->pRend->sortParts = 1;
+				} else {
+					particlesSystem->pRend->displayMode = 0;
+					particlesSystem->pRend->blendingMode = 0;
+					particlesSystem->pRend->sortParts = 0;
+				}
+
+				particlesSystem->pRend->nSlices = 128;
+				particlesSystem->pRend->resMul = 1;
+
+			    MPlug lightPosXPlug( thisNode, aLightPosX );
+				float lightPosX;
+				lightPosXPlug.getValue(lightPosX);
+
+				MPlug lightPosYPlug( thisNode, aLightPosY );
+				float lightPosY;
+				lightPosYPlug.getValue(lightPosY);
+
+				MPlug lightPosZPlug( thisNode, aLightPosZ );
+				float lightPosZ;
+				lightPosZPlug.getValue(lightPosZ);
+				particlesSystem->pRend->lightPos = vec3f(lightPosX,lightPosY,lightPosZ);
+
+
+				MPlug lightTargetXPlug( thisNode, aLightTargetX );
+				float lightTargetX;
+				lightTargetXPlug.getValue(lightTargetX);
+
+				MPlug lightTargetYPlug( thisNode, aLightTargetY );
+				float lightTargetY;
+				lightTargetYPlug.getValue(lightTargetY);
+
+				MPlug lightTargetZPlug( thisNode, aLightTargetZ );
+				float lightTargetZ;
+				lightTargetZPlug.getValue(lightTargetZ);
+
+				particlesSystem->pRend->lightTarget = vec3f(lightTargetX,lightTargetY,lightTargetZ);
+
+				MPlug lightColorRPlug( thisNode, aLightColorR );
+				float lightColR;
+				lightColorRPlug.getValue(lightColR);
+
+				MPlug lightColorGPlug( thisNode, aLightColorG );
+				float lightColG;
+				lightColorGPlug.getValue(lightColG);
+
+				MPlug lightColorBPlug( thisNode, aLightColorB );
+				float lightColB;
+				lightColorRPlug.getValue(lightColB);
+
+				particlesSystem->pRend->lightColor = vec3f(lightColR, lightColG, lightColB);
+
+				MPlug colorAttRPlug( thisNode, aColorAttenuationR );
+				float colorAttR;
+				colorAttRPlug.getValue(colorAttR);
+
+				MPlug colorAttGPlug( thisNode, aColorAttenuationG );
+				float colorAttG;
+				colorAttGPlug.getValue(colorAttG);
+
+				MPlug colorAttBPlug( thisNode, aColorAttenuationB );
+				float colorAttB;
+				colorAttBPlug.getValue(colorAttB);
+				particlesSystem->pRend->colorAttenuation = vec3f(colorAttR, colorAttG, colorAttB);
+
+				MPlug shadowAlphaPlug( thisNode, aShadowAlpha );
+				shadowAlphaPlug.getValue(particlesSystem->pRend->shadowAlpha);
+
 				MPlug opaScalePlug( thisNode, aOpaScale );
 				opaScalePlug.getValue(particlesSystem->opacity);
 
 				MPlug pointSizePlug( thisNode, aPointSize );
 				pointSizePlug.getValue(particlesSystem->pRend->pointSize);
+				//particlesSystem->pRend->pointSize = 0.03
 
 				MPlug startColorRPlug( thisNode, aStartColorR );
 				float startColR;
@@ -261,6 +378,97 @@ MStatus particlesNode::initialize()
 	aPreview = nAttr.create("preview", "prv", MFnNumericData::kBoolean, 1, &stat);
 	CHECK_MSTATUS(stat);
 	stat = addAttribute(aPreview);
+
+	aShadedMode = nAttr.create("shadedMode", "shmo", MFnNumericData::kBoolean, 0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aShadedMode);
+
+	MFnStringData                         fnStringData;
+    MObject                               defaultPath;
+	defaultPath = fnStringData.create("C:/pictures/centerGradient.tif");
+
+	aSpritePath = tAttr.create( "spritePath", "spat", MFnData::kString, defaultPath, &stat );
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aSpritePath);
+
+		aLightPosX = nAttr.create("lightPosX", "lipx", MFnNumericData::kFloat, 10.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aLightPosX);
+
+	aLightPosY = nAttr.create("lightPosY", "lipy", MFnNumericData::kFloat, 10.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aLightPosY);
+
+	aLightPosZ = nAttr.create("lightPosZ", "lipz", MFnNumericData::kFloat, 0.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aLightPosZ);
+
+	aLightPos = nAttr.create("lightPos", "lipos", aLightPosX, aLightPosY, aLightPosZ, &stat);
+	CHECK_MSTATUS(stat);
+	nAttr.setKeyable(true);
+	nAttr.setDefault(10.0,10.0,0.0);
+	stat = addAttribute(aLightPos);
+
+	aLightTargetX = nAttr.create("lightTargetX", "ltpx", MFnNumericData::kFloat, 0.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aLightTargetX);
+
+	aLightTargetY = nAttr.create("lightTargetY", "ltpy", MFnNumericData::kFloat, 0.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aLightTargetY);
+
+	aLightTargetZ = nAttr.create("lightTargetZ", "ltpz", MFnNumericData::kFloat, 0.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aLightTargetZ);
+
+	aLightTarget = nAttr.create("lightTarget", "ltpos", aLightTargetX, aLightTargetY, aLightTargetZ, &stat);
+	CHECK_MSTATUS(stat);
+	nAttr.setKeyable(true);
+	nAttr.setDefault(0.0,0.0,0.0);
+	stat = addAttribute(aLightTarget);
+
+	
+	aLightColorR = nAttr.create("lightColorR", "lcr", MFnNumericData::kFloat, 1.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aLightColorR);
+
+	aLightColorG = nAttr.create("lightColorG", "lcg", MFnNumericData::kFloat, 1.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aLightColorG);
+
+	aLightColorB = nAttr.create("lightColorB", "lcb", MFnNumericData::kFloat, 1.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aLightColorB);
+
+	aLightColor = nAttr.create("lightColor", "lcol", aLightColorR, aLightColorG, aLightColorB, &stat);
+	CHECK_MSTATUS(stat);
+	nAttr.setKeyable(true);
+    nAttr.setUsedAsColor(true);
+	stat = addAttribute(aLightColor);
+
+	aColorAttenuationR = nAttr.create("colorAttenuationR", "car", MFnNumericData::kFloat, 1.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aColorAttenuationR);
+
+	aColorAttenuationG = nAttr.create("colorAttenuationG", "cag", MFnNumericData::kFloat, 1.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aColorAttenuationG);
+
+	aColorAttenuationB = nAttr.create("colorAttenuationB", "cab", MFnNumericData::kFloat, 1.0, &stat);
+	CHECK_MSTATUS(stat);
+	stat = addAttribute(aColorAttenuationB);
+
+	aColorAttenuation = nAttr.create("colorAttenuation", "colatt", aColorAttenuationR, aColorAttenuationG, aColorAttenuationB, &stat);
+	CHECK_MSTATUS(stat);
+	nAttr.setKeyable(true);
+    nAttr.setUsedAsColor(true);
+	stat = addAttribute(aColorAttenuation);
+
+	aShadowAlpha = nAttr.create("shadowAlpha", "sha", MFnNumericData::kFloat, 0.3, &stat);
+	CHECK_MSTATUS(stat);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	stat = addAttribute(aShadowAlpha);
 
 	aOpaScale = nAttr.create("opaScale", "opa", MFnNumericData::kFloat, 0.05, &stat);
 	CHECK_MSTATUS(stat);

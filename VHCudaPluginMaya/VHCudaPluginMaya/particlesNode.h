@@ -10,6 +10,7 @@
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnUnitAttribute.h>
+#include <maya/MFnStringData.h>
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MArrayDataBuilder.h>
 #include <maya/MFnMessageAttribute.h>
@@ -95,6 +96,32 @@ public:
 	static	MObject		aNoiseLacun;
 
 	static	MObject		aPreview;
+	static	MObject		aShadedMode;
+
+	static  MObject		aSpritePath;
+
+	static	MObject		aLightPosX;
+	static	MObject		aLightPosY;
+	static	MObject		aLightPosZ;
+	static	MObject		aLightPos;
+
+	static	MObject		aLightTargetX;
+	static	MObject		aLightTargetY;
+	static	MObject		aLightTargetZ;
+	static	MObject		aLightTarget;
+
+	static	MObject		aLightColorR;
+	static	MObject		aLightColorG;
+	static	MObject		aLightColorB;
+	static	MObject		aLightColor;
+
+	static	MObject		aColorAttenuationR;
+	static	MObject		aColorAttenuationG;
+	static	MObject		aColorAttenuationB;
+	static	MObject		aColorAttenuation;
+
+	static	MObject		aShadowAlpha;
+
 	static	MObject		aOpaScale;
 	static	MObject		aPointSize;
 
