@@ -476,7 +476,7 @@ MStatus particlesNode::initialize()
 	nAttr.setSoftMax(1.0);
 	stat = addAttribute(aOpaScale);
 
-	aPointSize = nAttr.create("pointSize", "pze", MFnNumericData::kFloat, 1.0, &stat);
+	aPointSize = nAttr.create("pointSize", "pze", MFnNumericData::kFloat, 0.03, &stat);
 	CHECK_MSTATUS(stat);
 	stat = addAttribute(aPointSize);
 

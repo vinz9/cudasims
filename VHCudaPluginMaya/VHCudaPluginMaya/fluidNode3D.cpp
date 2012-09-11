@@ -217,12 +217,16 @@ void fluidNode3D::draw( M3dView & view, const MDagPath & path,
 		if(fluidSolver->displaySlice) {
 
 			MPlug slicePosPlug( thisNode, aSlicePos );
-			float slicePos;
-			slicePosPlug.getValue(slicePos);
+			slicePosPlug.getValue(fluidSolver->slicePos);
 
 			MPlug sliceAxisPlug( thisNode, aSliceAxis );
-			int sliceAxis;
-			sliceAxisPlug.getValue(sliceAxis);
+			sliceAxisPlug.getValue(fluidSolver->sliceAxis);
+
+			MPlug sliceTypePlug( thisNode, aSliceType );
+			sliceTypePlug.getValue(fluidSolver->sliceType);
+
+			MPlug sliceBoundsPlug( thisNode, aSliceBounds );
+			sliceBoundsPlug.getValue(fluidSolver->sliceBounds);
 
 
 			if ( ( style == M3dView::kFlatShaded ) ||  ( style == M3dView::kGouraudShaded ) ) { 
