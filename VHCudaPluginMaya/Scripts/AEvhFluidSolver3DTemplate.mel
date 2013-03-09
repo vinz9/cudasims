@@ -1,0 +1,72 @@
+global proc AEvhFluidSolver3DTemplate(string $nodeName)
+{
+    
+	editorTemplate -beginScrollLayout;
+
+		editorTemplate -beginLayout "Container" -collapse 0;
+			editorTemplate -label "Size" -addControl "fluidSize";
+			editorTemplate -label "Resolution" -addControl "res";
+			editorTemplate -label "Border -X" -addControl "borderNegX";
+			editorTemplate -label "Border +X" -addControl "borderPosX";
+			editorTemplate -label "Border -Y" -addControl "borderNegY";
+			editorTemplate -label "Border +Y" -addControl "borderPosY";
+			editorTemplate -label "Border -Z" -addControl "borderNegZ";
+			editorTemplate -label "Border +Z" -addControl "borderPosZ";
+    editorTemplate -endLayout;
+    
+    editorTemplate -beginLayout "Display" -collapse 0;
+    	editorTemplate -label "Preview" -addControl "preview";
+    	editorTemplate -label "Draw Wire Cube" -addControl "drawCube";
+    	editorTemplate -label "Opacity Scale" -addControl "opaScale";
+    	editorTemplate -label "Step Mul" -addControl "stepMul";
+    	editorTemplate -label "Display Res" -addControl "displayRes";
+    	
+    	editorTemplate -label "Self Shadows" -addControl "doShadows";
+    	editorTemplate -label "Light Position" -addControl "lightPos";
+    	/*editorTemplate -label "Light Position X" -addControl "lightPosX";
+    	editorTemplate -label "Light Position Y" -addControl "lightPosY";
+    	editorTemplate -label "Light Position Z" -addControl "lightPosZ";*/
+    	editorTemplate -label "Shadow Density" -addControl "shadowDens";
+    	editorTemplate -label "Shadow Step Mul" -addControl "shadowStepMul";
+    	editorTemplate -label "ShadowThreshold" -addControl "shadowThres";
+    	
+    	editorTemplate -label "DisplaySlice" -addControl "displaySlice";
+    	editorTemplate -label "Slice Type" -addControl "sliceType";
+    	editorTemplate -label "Slice Axis" -addControl "sliceAxis";
+    	editorTemplate -label "Slice Position" -addControl "slicePos";
+    	editorTemplate -label "Max Bound" -addControl "sliceBounds";
+    	
+     editorTemplate -endLayout;
+
+		editorTemplate -beginLayout "Solver" -collapse 0;
+      editorTemplate -addControl "substeps";
+      editorTemplate -label "Jacobi Iterations" -addControl "jacIter";
+      editorTemplate -addControl "startFrame";
+      editorTemplate -label "Copy Density" -addControl "densCopy";
+      
+		editorTemplate -endLayout;
+		
+		editorTemplate -beginLayout "Density" -collapse 0;
+      editorTemplate -label "Dissipation" -addControl "densDis";
+      editorTemplate -label "Buoyancy Strength" -addControl "densBuoyStr";
+      editorTemplate -label "Buoyancy Direction" -addControl "densBuoyDir";
+		editorTemplate -endLayout;
+		
+		editorTemplate -beginLayout "Velocity" -collapse 0;
+      editorTemplate -label "Damping" -addControl "velDamp";
+      editorTemplate -label "Vorticy Confinement" -addControl "vortConf";
+      editorTemplate -label "Noise Strength" -addControl "noiseStr";
+      editorTemplate -label "Noise Frequency" -addControl "noiseFreq";
+      editorTemplate -label "Noise Octaves" -addControl "noiseOct";
+      editorTemplate -label "Noise Lacunarity" -addControl "noiseLacun";
+      editorTemplate -label "Noise Speed" -addControl "noiseSpeed";
+      editorTemplate -label "Noise Amplitude" -addControl "noiseAmp";
+      
+		editorTemplate -endLayout;
+
+     AEabstractBaseCreateTemplate $nodeName;
+
+     editorTemplate -addExtraControls;
+
+   editorTemplate -endScrollLayout;
+}

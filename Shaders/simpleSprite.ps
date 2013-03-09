@@ -1,0 +1,7 @@
+uniform sampler2D sDiffuseMap;
+
+void main(void) {
+
+   gl_FragColor = gl_Color * texture2D(sDiffuseMap, gl_TexCoord[0].st);
+
+}

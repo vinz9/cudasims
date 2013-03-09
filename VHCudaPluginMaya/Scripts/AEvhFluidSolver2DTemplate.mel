@@ -1,0 +1,51 @@
+global proc AEvhFluidSolver2DTemplate(string $nodeName)
+{
+    
+	editorTemplate -beginScrollLayout;
+
+		editorTemplate -beginLayout "Container" -collapse 0;
+			editorTemplate -label "Size" -addControl "fluidSize";
+			editorTemplate -label "Resolution" -addControl "res";
+			editorTemplate -label "Border -X" -addControl "borderNegX";
+			editorTemplate -label "Border +X" -addControl "borderPosX";
+			editorTemplate -label "Border -Y" -addControl "borderNegY";
+			editorTemplate -label "Border +Y" -addControl "borderPosY";
+    editorTemplate -endLayout;
+    
+    editorTemplate -beginLayout "Display" -collapse 0;
+    	editorTemplate -label "Preview" -addControl "preview";
+    	editorTemplate -label "Preview Type" -addControl "previewType";
+    	editorTemplate -label "Bounds" -addControl "maxBounds";
+    editorTemplate -endLayout;
+
+		editorTemplate -beginLayout "Solver" -collapse 0;
+      editorTemplate -addControl "substeps";
+      editorTemplate -label "Jacobi Iterations" -addControl "jacIter";
+      editorTemplate -addControl "startFrame";
+		editorTemplate -endLayout;
+		
+		editorTemplate -beginLayout "Density" -collapse 0;
+      editorTemplate -label "Dissipation" -addControl "densDis";
+      editorTemplate -label "Buoyancy Strength" -addControl "densBuoyStr";
+      editorTemplate -label "Buoyancy Direction" -addControl "densBuoyDir";
+		editorTemplate -endLayout;
+		
+		editorTemplate -beginLayout "Velocity" -collapse 0;
+      editorTemplate -label "Damping" -addControl "velDamp";
+      editorTemplate -label "Vorticy Confinement" -addControl "vortConf";
+      editorTemplate -label "Noise Strength" -addControl "noiseStr";
+      editorTemplate -label "Noise Frequency" -addControl "noiseFreq";
+      editorTemplate -label "Noise Octaves" -addControl "noiseOct";
+      editorTemplate -label "Noise Lacunarity" -addControl "noiseLacun";
+      editorTemplate -label "Noise Speed" -addControl "noiseSpeed";
+      editorTemplate -label "Noise Amplitude" -addControl "noiseAmp";
+			editorTemplate -label "Preview Noise" -addControl "previewNoise";
+      
+		editorTemplate -endLayout;
+
+     AEabstractBaseCreateTemplate $nodeName;
+
+     editorTemplate -addExtraControls;
+
+   editorTemplate -endScrollLayout;
+}
