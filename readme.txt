@@ -111,6 +111,7 @@ Known bug : Particles advection doesn't work properly if the fluid container is 
 Maya version crashes if viewport is switched between shaded/wireframe and shadowed sprites are displayed.
 Probably last version.
 
+
 22/07/2011 : version 0.61 : first linux build!
 04/05/2011 : version 0.6 : basic particles system with fluid advection added, code refactoring
 29/03/2011 : version 0.55 : initial houdini public release, code refactoring
